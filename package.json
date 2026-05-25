@@ -1,0 +1,18 @@
+{
+  "name": "content-automation-learning-hub",
+  "version": "1.0.0",
+  "description": "An interactive premium visual learning module and printable PDF guide on effective YouTube, Facebook, and TikTok automation at low-to-zero cost.",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx -y browser-sync start --server --files '*.html, src/**/*.css, src/**/*.js' --port 3000 --no-ui"
+  },
+  "keywords": [
+    "automation",
+    "youtube",
+    "tiktok",
+    "facebook",
+    "learning-module"
+  ],
+  "author": "Antigravity AI",
+  "license": "MIT"
+}

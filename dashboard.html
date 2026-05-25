@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Academy - Diagnostics Dashboard</title>
+  <link rel="stylesheet" href="src/css/index.css">
+  <link rel="stylesheet" href="src/css/dashboard.css">
+  <style>
+    /* Styling adjustments specifically for standalone dashboard rendering */
+    body {
+      overflow-x: hidden;
+      overflow-y: auto;
+      height: 100vh;
+      display: block;
+      padding: 0;
+      margin: 0;
+      background-color: #06070a;
+    }
+    
+    .db-standalone-wrapper {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    
+    .db-container {
+      width: 100%;
+      max-width: 1400px;
+      height: auto;
+      min-height: 85vh;
+      transform: none !important; /* disable modal animation scales */
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="db-standalone-wrapper">
+    <div class="hidden-dashboard-overlay active" id="hidden-dashboard-overlay" style="position: relative; background: transparent; backdrop-filter: none; display: flex; opacity: 1; pointer-events: auto; width: 100%; height: auto; z-index: auto;">
+      <div class="db-container">
+        
+        <!-- HEADER -->
+        <div class="db-header">
+          <div class="db-title-flex">
+            <div class="db-logo-badge">📊</div>
+            <div class="db-title-group">
+              <h2>Digital Academy Diagnostics</h2>
+              <p>Real-time client-side performance, session telemetry, and learner interaction logs.</p>
+            </div>
+          </div>
+          <button class="db-close-btn" id="db-close-btn" title="Close Diagnostics Tab" onclick="window.close();">×</button>
+        </div>
+        
+        <!-- DASHBOARD BODY -->
+        <div class="db-body">
+          
+          <!-- KPI METRICS GRID -->
+          <div class="db-metrics-grid">
+            <div class="db-kpi-card">
+              <span class="kpi-title">Total Pageviews</span>
+              <div class="kpi-value-group">
+                <span class="kpi-value" id="db-val-views">0</span>
+                <span class="kpi-unit">views</span>
+              </div>
+              <div class="kpi-footer">
+                <span class="kpi-trend-up">▲ 100%</span>
+                <span>vs past week</span>
+              </div>
+            </div>
+            
+            <div class="db-kpi-card">
+              <span class="kpi-title">Learner Sessions</span>
+              <div class="kpi-value-group">
+                <span class="kpi-value" id="db-val-sessions">0</span>
+                <span class="kpi-unit">active</span>
+              </div>
+              <div class="kpi-footer">
+                <span class="kpi-trend-up">▲ Live</span>
+                <span>real-time sessions</span>
+              </div>
+            </div>
+            
+            <div class="db-kpi-card kpi-success">
+              <span class="kpi-title">Avg Session Length</span>
+              <div class="kpi-value-group">
+                <span class="kpi-value" id="db-val-duration">0s</span>
+              </div>
+              <div class="kpi-footer">
+                <span>Time-on-site retention</span>
+              </div>
+            </div>
+            
+            <div class="db-kpi-card kpi-accent">
+              <span class="kpi-title">Engagement Rate</span>
+              <div class="kpi-value-group">
+                <span class="kpi-value" id="db-val-rate">0.0%</span>
+              </div>
+              <div class="kpi-footer">
+                <span class="kpi-trend-up">▲ Active</span>
+                <span>clicks & calculations</span>
+              </div>
+            </div>
+  
+            <div class="db-kpi-card">
+              <span class="kpi-title">Page Load Speed</span>
+              <div class="kpi-value-group">
+                <span class="kpi-value" id="db-val-speed">0.00s</span>
+              </div>
+              <div class="kpi-footer">
+                <span>Time to First Paint</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- VISUAL CHARTS FRAME -->
+          <div class="db-visuals-grid">
+            
+            <!-- Section Share Panel -->
+            <div class="db-panel">
+              <div class="db-panel-title">
+                <span>Section View Distribution</span>
+                <span class="db-panel-subtitle">Share of views by Academy Module</span>
+              </div>
+              <div class="bar-chart-container">
+                <!-- Home view -->
+                <div class="bar-row">
+                  <div class="bar-label-flex">
+                    <span class="bar-name">🏠 Academy Selection (Home)</span>
+                    <span class="bar-value" id="lbl-share-home">0 views (0%)</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill" id="bar-fill-home" style="background: linear-gradient(90deg, var(--primary), var(--secondary));"></div>
+                  </div>
+                </div>
+                
+                <!-- Social view -->
+                <div class="bar-row">
+                  <div class="bar-label-flex">
+                    <span class="bar-name">⚙️ Social Automation Masterclass</span>
+                    <span class="bar-value" id="lbl-share-social">0 views (0%)</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill" id="bar-fill-social" style="background: linear-gradient(90deg, var(--secondary), var(--accent));"></div>
+                  </div>
+                </div>
+                
+                <!-- Website view -->
+                <div class="bar-row">
+                  <div class="bar-label-flex">
+                    <span class="bar-name">🌐 Zero-Cost Web Dev Academy</span>
+                    <span class="bar-value" id="lbl-share-website">0 views (0%)</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill" id="bar-fill-website" style="background: linear-gradient(90deg, var(--accent), var(--warning));"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Event Trend Panel -->
+            <div class="db-panel">
+              <div class="db-panel-title">
+                <span>Learner Interaction Activity</span>
+                <span class="db-panel-subtitle">Event counts distributed chronologically</span>
+              </div>
+              <div class="svg-chart-container" id="activity-svg-container">
+                <!-- SVG chart elements will be injected here dynamically by dashboard.js -->
+              </div>
+            </div>
+          </div>
+          
+          <!-- EVENT LOGS FEED -->
+          <div class="db-panel logs-panel">
+            <div class="db-panel-title">
+              <span>Diagnostic Event Logs</span>
+              <div class="logs-controls">
+                <div class="filter-group">
+                  <button class="filter-btn active js-db-filter" data-filter="all">All Events</button>
+                  <button class="filter-btn js-db-filter" data-filter="pageviews">Pageviews</button>
+                  <button class="filter-btn js-db-filter" data-filter="clicks">Clicks</button>
+                  <button class="filter-btn js-db-filter" data-filter="calculations">Tools (Calc/Box)</button>
+                  <button class="filter-btn js-db-filter" data-filter="system">System Speed</button>
+                </div>
+                <input type="text" class="search-input" id="db-search-input" placeholder="Search event logs...">
+              </div>
+            </div>
+            
+            <div class="logs-table-wrapper">
+              <table class="logs-table">
+                <thead>
+                  <tr>
+                    <th style="width: 15%;">Type</th>
+                    <th style="width: 25%;">Category</th>
+                    <th style="width: 45%;">Telemetry Detail (Event Label)</th>
+                    <th style="width: 15%;">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody id="db-table-body">
+                  <!-- Log rows will be dynamically loaded here by dashboard.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- FOOTER COMMAND TOOLBAR -->
+        <div class="db-footer-toolbar">
+          <button class="btn-db-danger" id="db-btn-reset">Purge Telemetry Storage</button>
+          <div class="toolbar-actions">
+            <button class="btn-db-success" id="db-btn-mock">🚀 Mock Live Traffic</button>
+            <button class="btn-db-action" id="db-btn-export">
+              📥 Export JSON Log
+            </button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mock the overlay wrapper matching active tags so that dashboard.js works without edits!
+    document.addEventListener('DOMContentLoaded', () => {
+      const mockOverlay = document.getElementById('hidden-dashboard-overlay') || {
+        classList: {
+          contains: () => true, // Standalone is always active/active-simulated
+          add: () => {},
+          remove: () => {}
+        }
+      };
+      // Bind helper
+      window.dashboardOverlayMock = mockOverlay;
+    });
+  </script>
+  <script src="src/js/analytics.js"></script>
+  <script src="src/js/dashboard.js"></script>
+</body>
+</html>
