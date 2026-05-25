@@ -428,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const diagnosticPackage = {
         exportedAt: new Date().toISOString(),
-        site: "Digital Creation Academy Hub",
+        site: "AI True Sight",
         summary: {
           totalSessions: sessions.length,
           totalEvents: events.length
@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(diagnosticPackage, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `da_metrics_diagnostics_${Date.now()}.json`);
+      downloadAnchor.setAttribute("download", `ts_metrics_diagnostics_${Date.now()}.json`);
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
