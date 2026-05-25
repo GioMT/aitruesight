@@ -1,0 +1,8 @@
+# Google AdSense Publisher Verification File
+# Designed by Antigravity AI
+#
+# INSTRUCTIONS: 
+# Replace the placeholder "pub-0000000000000000" below with your actual Google AdSense Publisher ID.
+# Format: google.com, pub-[YOUR_PARTNER_ID], DIRECT, f08c47fec0942fa0
+
+google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
