@@ -7,6 +7,14 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  // --- PRO THEME INITIALIZATION ---
+  const savedTheme = localStorage.getItem('da_theme') || 'dark';
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+  } else {
+    document.body.classList.remove('light-theme');
+  }
+
   const overlay = document.getElementById('hidden-dashboard-overlay');
   const closeBtn = document.getElementById('db-close-btn');
   const searchInput = document.getElementById('db-search-input');
@@ -110,6 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 4. Render Event Logs list (Searchable table)
     renderEventTable(events);
+    
+    // 5. Sync Google Analytics ID config UI
+    updateGAConfigUI();
   }
 
   // Calculate high-fidelity metrics
@@ -138,7 +149,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Bind values to UI elements
     document.getElementById('db-val-views').textContent = totalViews.toLocaleString();
-    document.getElementById('db-val-sessions').textContent = totalSessionsCount.toLocaleString();
+    
+    // Bind new Unique Visitors and Total Sessions safely
+    let uniqueVisitorsCount = 1;
+    if (window.WebsiteAnalytics && typeof window.WebsiteAnalytics.getUniqueVisitorsCount === 'function') {
+      uniqueVisitorsCount = window.WebsiteAnalytics.getUniqueVisitorsCount();
+    } else {
+      const uniqueClients = new Set();
+      sessions.forEach(s => {
+        if (s.clientId) uniqueClients.add(s.clientId);
+      });
+      uniqueVisitorsCount = Math.max(1, uniqueClients.size);
+    }
+    const totalSessionsRealCount = sessions.length;
+    
+    const visitorsEl = document.getElementById('db-val-visitors');
+    if (visitorsEl) {
+      visitorsEl.textContent = uniqueVisitorsCount.toLocaleString();
+    }
+    const totalSessEl = document.getElementById('db-val-total-sessions');
+    if (totalSessEl) {
+      totalSessEl.textContent = totalSessionsRealCount.toLocaleString();
+    }
+
+    const liveOnlineUsers = parseInt(localStorage.getItem('da_live_online_users')) || 1;
+    document.getElementById('db-val-sessions').textContent = liveOnlineUsers.toLocaleString();
     
     const durationStr = avgDurationMin > 0 ? `${avgDurationMin}m ${avgDurationSec}s` : `${avgDurationSec}s`;
     document.getElementById('db-val-duration').textContent = durationStr;
@@ -214,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       // Empty fallback data curves
       for (let i = 0; i < totalPoints; i++) {
-        blocksData[i] = Math.round(Math.random() * 8) + 1;
+        blocksData[i] = 0;
       }
     }
 
@@ -396,16 +431,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- ACTIONS BARS COMMANDS ---
 
-  // 1. Seed Mock Traffic
-  if (mockBtn) {
-    mockBtn.addEventListener('click', () => {
-      if (window.WebsiteAnalytics) {
-        window.WebsiteAnalytics.seedMockData();
-        alert("Mock traffic generated successfully! Enjoy the visual charts and live graphs.");
-      }
-    });
-  }
-
   // 2. Clear Database
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
@@ -445,5 +470,156 @@ document.addEventListener('DOMContentLoaded', () => {
       downloadAnchor.click();
       downloadAnchor.remove();
     });
+  }
+
+  // --- GOOGLE ANALYTICS INTEGRATION CONTROLLER ---
+  const gaIdInput = document.getElementById('db-ga-id-input');
+  const gaSaveBtn = document.getElementById('db-ga-btn-save');
+  const gaClearBtn = document.getElementById('db-ga-btn-clear');
+  const gaStatusBadge = document.getElementById('db-ga-status-badge');
+
+  function updateGAConfigUI() {
+    if (!gaIdInput || !gaSaveBtn || !gaClearBtn || !gaStatusBadge) return;
+
+    const savedId = localStorage.getItem('ga_measurement_id');
+    if (savedId) {
+      gaIdInput.value = savedId;
+      gaStatusBadge.textContent = `Connected (${savedId})`;
+      gaStatusBadge.style.background = 'rgba(16, 185, 129, 0.1)';
+      gaStatusBadge.style.color = 'var(--success)';
+      gaClearBtn.style.display = 'inline-block';
+      gaSaveBtn.textContent = 'Update ID';
+    } else {
+      gaIdInput.value = '';
+      gaStatusBadge.textContent = 'Not Connected';
+      gaStatusBadge.style.background = 'rgba(255, 255, 255, 0.05)';
+      gaStatusBadge.style.color = 'var(--text-muted)';
+      gaClearBtn.style.display = 'none';
+      gaSaveBtn.textContent = 'Activate ID';
+    }
+  }
+
+  if (gaSaveBtn && gaIdInput) {
+    gaSaveBtn.addEventListener('click', () => {
+      const trackingId = gaIdInput.value.trim();
+      if (!trackingId) {
+        alert('Please enter a valid Google Analytics Measurement ID.');
+        return;
+      }
+
+      if (!trackingId.startsWith('G-')) {
+        alert('Format error: Measurement ID must start with "G-". Example: G-1234567');
+        return;
+      }
+
+      localStorage.setItem('ga_measurement_id', trackingId);
+      alert(`Success! Google Analytics Measurement ID [${trackingId}] saved successfully. Real-time logging is active for visitors on the landing page.`);
+      updateGAConfigUI();
+    });
+  }
+
+  if (gaClearBtn) {
+    gaClearBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to disconnect Google Analytics tracking?')) {
+        localStorage.removeItem('ga_measurement_id');
+        alert('Google Analytics disconnected successfully.');
+        updateGAConfigUI();
+      }
+    });
+  }
+
+  // --- BRANDING & LOGO UPLOAD CONTROLLER ---
+  const logoDropzone = document.getElementById('logo-dropzone');
+  const logoFileInput = document.getElementById('logo-file-input');
+  const logoResetBtn = document.getElementById('db-logo-btn-reset');
+
+  function handleLogoFile(file) {
+    if (!file) return;
+
+    // Validate that it is a PNG image
+    if (file.type !== 'image/png') {
+      alert('Format error: Only PNG format logo images are supported for transparency blending.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target.result;
+      
+      // Save in localStorage
+      localStorage.setItem('aitruesight_custom_logo', dataUrl);
+      
+      // Apply immediately
+      if (window.applyCustomLogo) {
+        window.applyCustomLogo(dataUrl);
+      }
+
+      // Log interaction event
+      if (window.WebsiteAnalytics) {
+        window.WebsiteAnalytics.logEvent('interaction', 'Dashboard Settings', 'Uploaded custom brand logo image');
+      }
+
+      alert('Success! Custom PNG logo uploaded, applied, and persisted successfully across the entire website.');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  if (logoDropzone && logoFileInput) {
+    // Dropzone Click Trigger
+    logoDropzone.addEventListener('click', () => {
+      logoFileInput.click();
+    });
+
+    // File Input Select Trigger
+    logoFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      handleLogoFile(file);
+    });
+
+    // Drag and Drop Event Listeners
+    ['dragenter', 'dragover'].forEach(eventName => {
+      logoDropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        logoDropzone.classList.add('dragover');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      logoDropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        logoDropzone.classList.remove('dragover');
+      }, false);
+    });
+
+    logoDropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const file = dt.files[0];
+      handleLogoFile(file);
+    }, false);
+  }
+
+  // Logo Reset to Default Action Trigger
+  if (logoResetBtn) {
+    logoResetBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear your custom logo and revert to the default AI True Sight branding?')) {
+        localStorage.removeItem('aitruesight_custom_logo');
+        
+        if (window.applyCustomLogo) {
+          window.applyCustomLogo(null);
+        }
+
+        if (window.WebsiteAnalytics) {
+          window.WebsiteAnalytics.logEvent('interaction', 'Dashboard Settings', 'Reverted custom brand logo to default');
+        }
+
+        alert('Branding reverted to default AI True Sight logo.');
+      }
+    });
+  }
+
+  // Hook into initial dashboard load data refresh
+  updateGAConfigUI();
+  if (window.applyCustomLogo) {
+    window.applyCustomLogo();
   }
 });

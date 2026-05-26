@@ -1,183 +1,91 @@
 document.addEventListener('DOMContentLoaded', () => {
-  /* ==========================================================================
-     1. SPA ACADEMY ROUTER
-     ========================================================================== */
-  const homeView = document.getElementById('home-view');
-  const socialAcademy = document.getElementById('social-academy-view');
-  const websiteAcademy = document.getElementById('website-academy-view');
-  
-  const startSocialBtn = document.getElementById('start-social-btn');
-  const startWebsiteBtn = document.getElementById('start-website-btn');
-  const returnHomeBtns = document.querySelectorAll('.js-return-home');
-  const brandLogoTrigger = document.querySelector('.brand-section');
-
   const sidebarMenu = document.querySelector('.nav-menu');
 
-  // Database of sidebar menus for different views
-  const SIDEBAR_TEMPLATES = {
-    home: `
-      <li class="nav-header">Dashboard</li>
-      <a href="#home-view" class="nav-item active js-nav-anchor">
-        <span class="nav-icon">🏠</span> Available Academies
-      </a>
-      <li class="nav-header">Utility Control</li>
-      <span class="nav-item" id="open-analytics-btn-nav">
-        <span class="nav-icon">📊</span> Config Analytics ID
-      </span>
-    `,
-    social: `
-      <li class="nav-header">Social Automation</li>
-      <a href="#social-intro" class="nav-item active js-nav-anchor">
-        <span class="nav-icon">⚓</span> Intro: The AI Wave
-      </a>
-      <a href="#social-flywheel" class="nav-item js-nav-anchor">
-        <span class="nav-icon">⚙️</span> Mod 1: The Flywheel
-      </a>
-      <a href="#social-scripts" class="nav-item js-nav-anchor">
-        <span class="nav-icon">✍️</span> Mod 2: Script Synthesis
-      </a>
-      <a href="#social-roadmap" class="nav-item js-nav-anchor">
-        <span class="nav-icon">🗺️</span> Roadmap: 6 Modules
-      </a>
-      <a href="#social-voice" class="nav-item js-nav-anchor">
-        <span class="nav-icon">🎙️</span> Mod 3: Studio Voice
-      </a>
-      <a href="#social-thumbnails" class="nav-item js-nav-anchor">
-        <span class="nav-icon">🎨</span> Mod 4: Thumbnail CTR
-      </a>
-      <a href="#social-editing" class="nav-item js-nav-anchor">
-        <span class="nav-icon">🎬</span> Mod 5: Cut & Pacing
-      </a>
-      <a href="#social-safety" class="nav-item js-nav-anchor">
-        <span class="nav-icon">🛡️</span> Mod 6: Scale & Safety
-      </a>
-      <a href="#social-planner" class="nav-item js-nav-anchor">
-        <span class="nav-icon">📊</span> Financial Planner
-      </a>
-      <a href="#social-prompter" class="nav-item js-nav-anchor">
-        <span class="nav-icon">⚡</span> Prompt Studio
-      </a>
-    `,
-    website: `
-      <li class="nav-header">Website Creation</li>
-      <a href="#web-intro" class="nav-item active js-nav-anchor">
-        <span class="nav-icon">⚓</span> Intro: The $0 Stack
-      </a>
-      <a href="#web-framework" class="nav-item js-nav-anchor">
-        <span class="nav-icon">⚙️</span> Mod 1: Modern Web
-      </a>
-      <a href="#web-dns" class="nav-item js-nav-anchor">
-        <span class="nav-icon">🌐</span> Mod 2: Domains & DNS
-      </a>
-      <a href="#web-boxmodel" class="nav-item js-nav-anchor">
-        <span class="nav-icon">🎨</span> Mod 3: CSS Box Model
-      </a>
-      <a href="#web-js" class="nav-item js-nav-anchor">
-        <span class="nav-icon">⚡</span> Mod 4: Dynamic JS
-      </a>
-      <a href="#web-ads" class="nav-item js-nav-anchor">
-        <span class="nav-icon">📊</span> Mod 5: Ads & Analytics
-      </a>
-      <a href="#web-vercel" class="nav-item js-nav-anchor">
-        <span class="nav-icon">🚀</span> Mod 6: Vercel Launch
-      </a>
-      <a href="#web-box-tool" class="nav-item js-nav-anchor">
-        <span class="nav-icon">📦</span> Box Model Tool
-      </a>
-    `
-  };
-  function switchView(viewName) {
-    // Hide all views
-    homeView.style.display = 'none';
-    socialAcademy.style.display = 'none';
-    websiteAcademy.style.display = 'none';
-    
-    // Deactivate panels
-    socialAcademy.classList.remove('active');
-    websiteAcademy.classList.remove('active');
-
-    // Telemetry pageview tracking
-    if (window.WebsiteAnalytics) {
-      let pageTitle = 'Available Academies';
-      if (viewName === 'social') pageTitle = 'Content Automation Masterclass';
-      else if (viewName === 'website') pageTitle = 'Zero-Cost Web Dev Academy';
-      window.WebsiteAnalytics.logEvent('pageview', 'Navigation', `Viewed ${pageTitle}`, viewName);
-    }
-
-    if (viewName === 'social') {
-      socialAcademy.style.display = 'block';
-      socialAcademy.classList.add('active');
-      sidebarMenu.innerHTML = SIDEBAR_TEMPLATES.social;
-      window.scrollTo(0, 0);
-      bindScrollObserver();
-      bindCarouselSlider();
-      bindSocialCalculators();
-    } else if (viewName === 'website') {
-      websiteAcademy.style.display = 'block';
-      websiteAcademy.classList.add('active');
-      sidebarMenu.innerHTML = SIDEBAR_TEMPLATES.website;
-      window.scrollTo(0, 0);
-      bindScrollObserver();
-      bindWebAcademyWidgets();
-    } else {
-      homeView.style.display = 'block';
-      sidebarMenu.innerHTML = SIDEBAR_TEMPLATES.home;
-      window.scrollTo(0, 0);
-      
-      // Bind GA config drawer trigger on the home view sidebar
-      const navGaTrigger = document.getElementById('open-analytics-btn-nav');
-      if (navGaTrigger) {
-        navGaTrigger.addEventListener('click', () => {
-          document.getElementById('analytics-drawer').classList.add('active');
-        });
-      }
-    }
-
-    // Re-bind navigation active-sync event listeners
-    bindSidebarNavigation();
-  }
-
-  // Bind view switch events
-  if (startSocialBtn) startSocialBtn.addEventListener('click', () => {
-    if (window.WebsiteAnalytics) {
-      window.WebsiteAnalytics.logEvent('click', 'Navigation', 'Started Content Automation Masterclass', 'social');
-    }
-    switchView('social');
-  });
-  if (startWebsiteBtn) startWebsiteBtn.addEventListener('click', () => {
-    if (window.WebsiteAnalytics) {
-      window.WebsiteAnalytics.logEvent('click', 'Navigation', 'Started Zero-Cost Web Development', 'website');
-    }
-    switchView('website');
-  });
-  
-  returnHomeBtns.forEach(btn => {
-    btn.addEventListener('click', () => switchView('home'));
-  });
-  
-  if (brandLogoTrigger) {
-    brandLogoTrigger.addEventListener('click', () => switchView('home'));
-  }
-
-  // Initial routing state (start on dashboard homepage)
-  switchView('home');
-
   /* ==========================================================================
-     2. SIDEBAR ANCHOR HIGH-LIGHT SYNCER
+     1. SIDEBAR & SCROLL SPY, & MOBILE DRAWER
      ========================================================================== */
-  function bindSidebarNavigation() {
-    const anchors = sidebarMenu.querySelectorAll('.js-nav-anchor');
+
+  function bindNavigationActions() {
+    const anchors = document.querySelectorAll('.js-nav-anchor');
     anchors.forEach(anchor => {
       anchor.addEventListener('click', (e) => {
-        // Sync active class
-        anchors.forEach(a => a.classList.remove('active'));
-        anchor.classList.add('active');
+        const targetHref = anchor.getAttribute('href');
+        
+        // Sync active highlight status across both sidebar and horizontal nav tracks
+        anchors.forEach(a => {
+          if (a.getAttribute('href') === targetHref) {
+            a.classList.add('active');
+          } else {
+            a.classList.remove('active');
+          }
+        });
+        
+        // Auto-close sidebar menu and overlay on mobile click transitions
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (sidebar) sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
       });
     });
   }
 
+  function bindSidebarScrollSpy() {
+    const anchors = document.querySelectorAll('.js-nav-anchor');
+    const sections = [];
+    anchors.forEach(anchor => {
+      const targetId = anchor.getAttribute('href');
+      if (targetId && targetId.startsWith('#')) {
+        const section = document.querySelector(targetId);
+        if (section && !sections.some(s => s.targetId === targetId)) {
+          sections.push({ targetId, section });
+        }
+      }
+    });
+
+    if (sections.length === 0) return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -60% 0px',
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const activeId = '#' + entry.target.id;
+          anchors.forEach(anchor => {
+            if (anchor.getAttribute('href') === activeId) {
+              anchor.classList.add('active');
+            } else {
+              anchor.classList.remove('active');
+            }
+          });
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach(s => observer.observe(s.section));
+  }
+
+  function bindMobileMenu() {
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const overlay = document.getElementById('sidebar-overlay');
+    const sidebar = document.querySelector('.sidebar');
+    
+    if (!toggleBtn || !overlay || !sidebar) return;
+    
+    function toggleMenu() {
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+    
+    toggleBtn.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+  }
+
   /* ==========================================================================
-     3. SCROLL REVEAL ENGINES (INTERSECTION OBSERVER)
+     2. SCROLL REVEAL ENGINES (INTERSECTION OBSERVER)
      ========================================================================== */
   function bindScrollObserver() {
     const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
@@ -199,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================================
-     4. MODULE CAROUSEL SLIDER ENGINE
+     3. MODULE CAROUSEL SLIDER ENGINE
      ========================================================================== */
   function bindCarouselSlider() {
     const track = document.getElementById('carousel-track');
@@ -253,14 +161,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const userCountVal = document.getElementById('js-active-users');
   const chartBars = document.querySelectorAll('.dash-bar');
   
-  if (userCountVal && chartBars.length > 0) {
-    let activeUsers = 142;
-    
+  if (userCountVal) {
+    userCountVal.textContent = "1";
+  }
+  
+  if (chartBars.length > 0) {
     function updateAnalyticsWidget() {
-      const shift = Math.floor(Math.random() * 9) - 4; // -4 to +4
-      activeUsers = Math.min(Math.max(120, activeUsers + shift), 185);
-      userCountVal.textContent = activeUsers;
-      
       chartBars.forEach(bar => {
         const heightPercent = Math.floor(Math.random() * 90) + 10;
         bar.style.height = `${heightPercent}%`;
@@ -353,11 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================================
      7. DYNAMIC GOOGLE ANALYTICS INTEGRATION
      ========================================================================== */
-  const configTrigger = document.getElementById('open-analytics-btn');
-  const configDrawer = document.getElementById('analytics-drawer');
-  const drawerClose = document.getElementById('drawer-close');
-  const analyticsInput = document.getElementById('analytics-id-input');
-  const saveAnalyticsBtn = document.getElementById('save-analytics-btn');
   const statusBadge = document.getElementById('analytics-status-badge');
 
   function injectGoogleAnalytics(measurementId) {
@@ -396,54 +297,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load GA from storage on launch
   const savedId = localStorage.getItem('ga_measurement_id');
   if (savedId) {
-    if (analyticsInput) analyticsInput.value = savedId;
     injectGoogleAnalytics(savedId);
     if (statusBadge) {
       statusBadge.textContent = 'Active (Live)';
       statusBadge.style.background = 'rgba(16, 185, 129, 0.1)';
       statusBadge.style.color = 'var(--success)';
     }
-  }
-
-  if (configTrigger && configDrawer && drawerClose) {
-    configTrigger.addEventListener('click', () => {
-      configDrawer.classList.add('active');
-    });
-
-    drawerClose.addEventListener('click', () => {
-      configDrawer.classList.remove('active');
-    });
-
-    saveAnalyticsBtn.addEventListener('click', () => {
-      const trackingId = analyticsInput.value.trim();
-      if (!trackingId) {
-        localStorage.removeItem('ga_measurement_id');
-        statusBadge.textContent = 'Not Configured';
-        statusBadge.style.background = 'rgba(255, 255, 255, 0.05)';
-        statusBadge.style.color = 'var(--text-muted)';
-        alert('Tracking ID cleared.');
-        configDrawer.classList.remove('active');
-        return;
-      }
-
-      if (!trackingId.startsWith('G-')) {
-        alert('Format error: Tracking ID must start with "G-". Example: G-1234567');
-        return;
-      }
-
-      localStorage.setItem('ga_measurement_id', trackingId);
-      const isSuccess = injectGoogleAnalytics(trackingId);
-
-      if (isSuccess) {
-        statusBadge.textContent = 'Active (Live)';
-        statusBadge.style.background = 'rgba(16, 185, 129, 0.1)';
-        statusBadge.style.color = 'var(--success)';
-        alert(`Success! Google Analytics [${trackingId}] is active and logging visual analytics.`);
-        configDrawer.classList.remove('active');
-      } else {
-        alert('Error compiling measurement tag.');
-      }
-    });
   }
 
   /* ==========================================================================
@@ -588,5 +447,192 @@ For each of the 3 clips, provide:
       alert('Export Tip: The browser print dialog will now open.\n\n1. Select "Destination: Save as PDF".\n2. Set "Layout: Landscape".\n3. Under "More settings", set "Margins: None" or "Minimum" to get sleek borderless slides.\n4. Click Save!');
       window.print();
     });
+  }
+
+  // --- PRO THEME SELECTOR SWITCH ---
+  const themeToggleBtn = document.getElementById('theme-toggle-btn');
+  const sunIcon = document.querySelector('.theme-sun-icon');
+  const moonIcon = document.querySelector('.theme-moon-icon');
+
+  function updateThemeUI(theme) {
+    if (theme === 'light') {
+      document.body.classList.add('light-theme');
+      if (sunIcon) sunIcon.style.display = 'inline-block';
+      if (moonIcon) moonIcon.style.display = 'none';
+    } else {
+      document.body.classList.remove('light-theme');
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (moonIcon) moonIcon.style.display = 'inline-block';
+    }
+  }
+
+  // Load theme preference on launch
+  const savedTheme = localStorage.getItem('da_theme') || 'dark';
+  updateThemeUI(savedTheme);
+
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+      const currentTheme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
+      const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
+      localStorage.setItem('da_theme', targetTheme);
+      updateThemeUI(targetTheme);
+      
+      if (window.WebsiteAnalytics) {
+        window.WebsiteAnalytics.logEvent('click', 'Settings', `Switched theme to ${targetTheme}`);
+      }
+    });
+  }
+
+  // --- DYNAMIC AD BANNER INJECTION SYSTEM (AGGRESSIVE & CLEAN) ---
+  const AD_BRANDS = [
+    {
+      brand: 'Nespresso',
+      headline: 'Press to Explore. Discover the art of premium espresso at home.',
+      cta: 'Shop Now',
+      color: 'var(--warning)',
+      gradient: 'linear-gradient(135deg, var(--warning), var(--accent))',
+      shadow: 'rgba(245, 158, 11, 0.15)',
+      alertMsg: 'Redirecting to Nespresso store page...',
+      icon: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/>'
+    },
+    {
+      brand: 'Claude AI',
+      headline: 'Integrate Claude directly inside your automation workflows. Build smarter.',
+      cta: 'Try Claude',
+      color: 'var(--primary)',
+      gradient: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+      shadow: 'rgba(0, 242, 254, 0.15)',
+      alertMsg: 'Redirecting to Anthropic Claude developer portal...',
+      icon: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>'
+    },
+    {
+      brand: 'Vercel',
+      headline: 'Deploy your web projects globally at $0 cost with instant CDN edge caching.',
+      cta: 'Deploy Now',
+      color: 'var(--accent)',
+      gradient: 'linear-gradient(135deg, var(--accent), var(--warning))',
+      shadow: 'rgba(255, 8, 68, 0.15)',
+      alertMsg: 'Redirecting to Vercel hosting registration...',
+      icon: '<polygon points="12,2 22,20 2,20"/>'
+    },
+    {
+      brand: 'Google Pixel',
+      headline: 'Find your best angles with AI-powered Camera Coach on Pixel 10 Pro.',
+      cta: 'Learn More',
+      color: 'var(--success)',
+      gradient: 'linear-gradient(135deg, var(--success), var(--primary))',
+      shadow: 'rgba(16, 185, 129, 0.15)',
+      alertMsg: 'Redirecting to Google Pixel 10 Pro product overview...',
+      icon: '<rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/>'
+    },
+    {
+      brand: 'Leonardo.ai',
+      headline: 'Generate photorealistic graphics and high-CTR viral assets in seconds.',
+      cta: 'Generate Now',
+      color: 'var(--warning)',
+      gradient: 'linear-gradient(135deg, var(--warning), var(--secondary))',
+      shadow: 'rgba(245, 158, 11, 0.15)',
+      alertMsg: 'Redirecting to Leonardo.ai creative studio...',
+      icon: '<path d="M12 2L2 22h20L12 2zM12 6l6.5 13h-13L12 6z"/>'
+    },
+    {
+      brand: 'ElevenLabs',
+      headline: 'Create natural, emotional AI voices for YouTube automated flywheels instantly.',
+      cta: 'Create Voices',
+      color: 'var(--primary)',
+      gradient: 'linear-gradient(135deg, var(--primary), var(--accent))',
+      shadow: 'rgba(0, 242, 254, 0.15)',
+      alertMsg: 'Redirecting to ElevenLabs voice synthesizers...',
+      icon: '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3"/>'
+    },
+    {
+      brand: 'CapCut PC',
+      headline: 'Stitch, transition, and add auto-captions to your vertical clips for free.',
+      cta: 'Download Editor',
+      color: 'var(--success)',
+      gradient: 'linear-gradient(135deg, var(--success), var(--secondary))',
+      shadow: 'rgba(16, 185, 129, 0.15)',
+      alertMsg: 'Redirecting to CapCut PC official download portal...',
+      icon: '<rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/>'
+    },
+    {
+      brand: 'Cloudflare',
+      headline: 'Accelerate, protect, and secure your domain DNS with global CDN proxying.',
+      cta: 'Secure Domain',
+      color: 'var(--accent)',
+      gradient: 'linear-gradient(135deg, var(--accent), var(--primary))',
+      shadow: 'rgba(255, 8, 68, 0.15)',
+      alertMsg: 'Redirecting to Cloudflare security configuration gateway...',
+      icon: '<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>'
+    }
+  ];
+
+  function injectAdBanners() {
+    const mainColumns = document.querySelectorAll('.academy-main-col');
+    mainColumns.forEach(mainCol => {
+      const sections = mainCol.querySelectorAll('.section-wrapper');
+      
+      sections.forEach((section, idx) => {
+        if (idx === sections.length - 1) return; // Skip the last section since skyscraper fits there
+        
+        const adData = AD_BRANDS[idx % AD_BRANDS.length];
+        
+        const adContainer = document.createElement('div');
+        adContainer.className = 'in-content-ad-container';
+        adContainer.innerHTML = `
+          <span class="ad-label">Advertisement - Continue Reading Below</span>
+          <div class="simulated-ad-card ad-banner">
+            <span class="ad-opt-out" onclick="this.parentElement.parentElement.style.display='none';">×</span>
+            <div class="ad-banner-flex">
+              <div class="ad-banner-visual">
+                <div class="ad-visual-glow" style="background: radial-gradient(circle, ${adData.color}1f 0%, transparent 70%);"></div>
+                <svg class="ad-svg-icon" viewBox="0 0 24 24" style="fill: ${adData.color};">${adData.icon}</svg>
+              </div>
+              <div class="ad-banner-info">
+                <div class="ad-banner-text">
+                  <div class="ad-brand">${adData.brand}</div>
+                  <div class="ad-headline" style="margin-bottom: 0;">${adData.headline}</div>
+                </div>
+                <button class="ad-cta-btn" style="background: ${adData.gradient}; box-shadow: 0 4px 12px ${adData.shadow};" onclick="alert('${adData.alertMsg}');">${adData.cta}</button>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        section.parentNode.insertBefore(adContainer, section.nextSibling);
+      });
+    });
+  }
+
+  // Inject Ad Banners dynamic placements
+  injectAdBanners();
+
+  // --- SIMULATED AD TELEMETRY BINDINGS ---
+  const adCtaButtons = document.querySelectorAll('.ad-cta-btn');
+  adCtaButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const card = e.target.closest('.simulated-ad-card');
+      const brand = card ? card.querySelector('.ad-brand').textContent : 'Generic';
+      if (window.WebsiteAnalytics) {
+        window.WebsiteAnalytics.logEvent('click', 'Monetization Ads', `Clicked Simulated Ad: ${brand}`);
+      }
+    });
+  });
+
+  // --- INITIALIZE ALL ACTIVE MODULES SAFELY ---
+
+  bindNavigationActions();
+  bindSidebarScrollSpy();
+  bindMobileMenu();
+  bindScrollObserver();
+
+  if (document.getElementById('carousel-track')) {
+    bindCarouselSlider();
+  }
+  if (document.getElementById('calc-script')) {
+    bindSocialCalculators();
+  }
+  if (document.getElementById('box-padding')) {
+    bindWebAcademyWidgets();
   }
 });

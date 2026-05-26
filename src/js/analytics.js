@@ -11,7 +11,9 @@ class AnalyticsEngine {
     this.sessionKey = 'da_analytics_session_id';
     this.logsKey = 'da_analytics_logs';
     this.sessionsListKey = 'da_analytics_sessions_list';
+    this.clientKey = 'da_analytics_client_id';
     
+    this.clientId = this.initClientId();
     this.sessionId = this.initSession();
     this.sessionStartTime = Date.now();
     
@@ -20,6 +22,67 @@ class AnalyticsEngine {
     
     // Register secret triggers
     this.registerSecretTriggers();
+    
+    // Load and apply custom branding logo if active
+    this.initCustomLogoBranding();
+    
+    // Initialize the live, truthful visitor counter simulator
+    this.initLiveVisitorSimulator();
+  }
+
+  initCustomLogoBranding() {
+    // Expose applyCustomLogo globally on window
+    window.applyCustomLogo = (customLogoData = null) => {
+      const logoData = customLogoData !== null ? customLogoData : localStorage.getItem('aitruesight_custom_logo');
+      const faviconElements = document.querySelectorAll('link[rel*="icon"]');
+      const logoImgElements = document.querySelectorAll('.brand-logo img');
+      const previewImg = document.getElementById('logo-preview-img');
+      const resetBtn = document.getElementById('db-logo-btn-reset');
+      
+      if (logoData) {
+        // Apply custom logo
+        logoImgElements.forEach(img => {
+          img.src = logoData;
+        });
+        faviconElements.forEach(link => {
+          link.href = logoData;
+          link.type = 'image/png';
+        });
+        if (previewImg) {
+          previewImg.src = logoData;
+        }
+        if (resetBtn) {
+          resetBtn.style.display = 'inline-block';
+        }
+      } else {
+        // Revert to default
+        logoImgElements.forEach(img => {
+          img.src = 'aitruesight.png';
+        });
+        faviconElements.forEach(link => {
+          link.href = 'aitruesight.png?v=2';
+          link.type = 'image/png';
+        });
+        if (previewImg) {
+          previewImg.src = 'aitruesight.png';
+        }
+        if (resetBtn) {
+          resetBtn.style.display = 'none';
+        }
+      }
+    };
+
+    // Apply active custom logo immediately on DOM load
+    document.addEventListener('DOMContentLoaded', () => {
+      window.applyCustomLogo();
+    });
+
+    // Cross-tab real-time sync event hook
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'aitruesight_custom_logo') {
+        window.applyCustomLogo(e.newValue);
+      }
+    });
   }
 
   registerSecretTriggers() {
@@ -36,10 +99,10 @@ class AnalyticsEngine {
       }
     });
 
-    // 2. Double-Click Analytics Status Badge (in header)
+    // 2. Double-Click Online User Counter Pill secretly opens dashboard
     document.addEventListener('dblclick', (e) => {
-      const badge = e.target.closest('#analytics-status-badge');
-      if (badge) {
+      const pill = e.target.closest('.header-stat-pill');
+      if (pill) {
         e.preventDefault();
         window.open('dashboard.html', '_blank');
       }
@@ -67,6 +130,16 @@ class AnalyticsEngine {
     });
   }
 
+  // Generate or retrieve current client ID (survives tab close, unique per browser)
+  initClientId() {
+    let clientId = localStorage.getItem(this.clientKey);
+    if (!clientId) {
+      clientId = 'cli_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem(this.clientKey, clientId);
+    }
+    return clientId;
+  }
+
   // Generate or retrieve current session
   initSession() {
     let currentSessionId = sessionStorage.getItem(this.sessionKey);
@@ -85,6 +158,7 @@ class AnalyticsEngine {
     const sessions = this.getSessionsCatalog();
     sessions.push({
       id: sessId,
+      clientId: this.clientId,
       startTime: new Date().toISOString(),
       duration: 0,
       userAgent: navigator.userAgent,
@@ -96,6 +170,20 @@ class AnalyticsEngine {
     
     // Log session start event
     this.logEvent('session', 'Session', 'Session Started', 1);
+  }
+
+  getUniqueVisitorsCount() {
+    const sessions = this.getSessionsCatalog();
+    const uniqueClients = new Set();
+    sessions.forEach(s => {
+      if (s.clientId) {
+        uniqueClients.add(s.clientId);
+      }
+    });
+    if (uniqueClients.size === 0 && sessions.length > 0) {
+      return 1;
+    }
+    return Math.max(1, uniqueClients.size);
   }
 
   getSessionsCatalog() {
@@ -215,163 +303,29 @@ class AnalyticsEngine {
 
   // Bulk load mock data for styling and testing visualizations
   seedMockData() {
-    this.resetAllData();
-    
-    const now = Date.now();
-    const oneDay = 24 * 60 * 60 * 1000;
-    const categories = ['Navigation', 'Monetization Simulator', 'Prompt Studio', 'PDF Export', 'Box Model Tool', 'System'];
-    const views = ['home', 'social', 'website'];
-    
-    // 1. Seed sessions over the last 7 days
-    const mockSessions = [];
-    const totalMockSessions = 48;
-    
-    for (let i = 0; i < totalMockSessions; i++) {
-      const sessAge = Math.random() * 7 * oneDay;
-      const startTime = new Date(now - sessAge);
-      const duration = Math.floor(Math.random() * 600) + 30; // 30s to 10m
-      const sId = 'sess_mock_' + i;
-      
-      mockSessions.push({
-        id: sId,
-        startTime: startTime.toISOString(),
-        duration,
-        userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
-        screenWidth: [1440, 1920, 1280, 375, 412][Math.floor(Math.random() * 5)],
-        screenHeight: [900, 1080, 800, 812, 892][Math.floor(Math.random() * 5)],
-        platform: 'MacIntel'
-      });
-    }
-    
-    mockSessions.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
-    localStorage.setItem(this.sessionsListKey, JSON.stringify(mockSessions));
+    console.warn('[Analytics] Mock data generation is disabled as requested by the user.');
+  }
 
-    // 2. Seed events distributed across those sessions
-    const mockEvents = [];
-    
-    mockSessions.forEach(session => {
-      const sessTime = new Date(session.startTime).getTime();
-      
-      // Page load time
-      const loadTimeSec = (Math.random() * 1.2 + 0.3).toFixed(2);
-      mockEvents.push({
-        id: 'evt_mock_' + Math.random().toString(36).substr(2, 9),
-        sessionId: session.id,
-        timestamp: new Date(sessTime).toISOString(),
-        type: 'performance',
-        category: 'System',
-        label: 'Page Load Time',
-        value: parseFloat(loadTimeSec)
-      });
-      
-      // Initial home view
-      mockEvents.push({
-        id: 'evt_mock_' + Math.random().toString(36).substr(2, 9),
-        sessionId: session.id,
-        timestamp: new Date(sessTime + 500).toISOString(),
-        type: 'pageview',
-        category: 'Navigation',
-        label: 'Viewed Available Academies',
-        value: 'home'
-      });
-
-      // Randomized academy exploration
-      let currentOffset = 5000;
-      const exploreChoice = Math.random();
-      
-      if (exploreChoice > 0.3) {
-        // Explored social academy
-        currentOffset += Math.random() * 4000;
-        mockEvents.push({
-          id: 'evt_mock_' + Math.random().toString(36).substr(2, 9),
-          sessionId: session.id,
-          timestamp: new Date(sessTime + currentOffset).toISOString(),
-          type: 'click',
-          category: 'Navigation',
-          label: 'Started Content Automation Masterclass',
-          value: 'social'
-        });
-
-        // Prompt interactions
-        if (Math.random() > 0.4) {
-          currentOffset += Math.random() * 15000;
-          const promptType = ['Hook Maker', 'Script Builder', 'Thumbnail Prompter'][Math.floor(Math.random() * 3)];
-          mockEvents.push({
-            id: 'evt_mock_' + Math.random().toString(36).substr(2, 9),
-            sessionId: session.id,
-            timestamp: new Date(sessTime + currentOffset).toISOString(),
-            type: 'interaction',
-            category: 'Prompt Studio',
-            label: `Copied Prompt: ${promptType}`,
-            value: promptType.toLowerCase().replace(' ', '_')
-          });
-        }
-
-        // Calculator interactions
-        if (Math.random() > 0.4) {
-          currentOffset += Math.random() * 20000;
-          const profit = Math.floor(Math.random() * 20000) + 5000;
-          mockEvents.push({
-            id: 'evt_mock_' + Math.random().toString(36).substr(2, 9),
-            sessionId: session.id,
-            timestamp: new Date(sessTime + currentOffset).toISOString(),
-            type: 'interaction',
-            category: 'Monetization Simulator',
-            label: `Recalculated Profit to $${profit.toLocaleString()}/mo`,
-            value: profit
-          });
-        }
-        
-        // PDF exports
-        if (Math.random() > 0.8) {
-          currentOffset += Math.random() * 30000;
-          mockEvents.push({
-            id: 'evt_mock_' + Math.random().toString(36).substr(2, 9),
-            sessionId: session.id,
-            timestamp: new Date(sessTime + currentOffset).toISOString(),
-            type: 'click',
-            category: 'PDF Export',
-            label: 'Exported Slide PDF',
-            value: 1
-          });
-        }
-      }
-
-      if (exploreChoice < 0.7) {
-        // Explored website academy
-        currentOffset += Math.random() * 25000;
-        mockEvents.push({
-          id: 'evt_mock_' + Math.random().toString(36).substr(2, 9),
-          sessionId: session.id,
-          timestamp: new Date(sessTime + currentOffset).toISOString(),
-          type: 'click',
-          category: 'Navigation',
-          label: 'Started Zero-Cost Web Development',
-          value: 'website'
-        });
-
-        // Box model adjustment
-        if (Math.random() > 0.3) {
-          currentOffset += Math.random() * 10000;
-          const padding = Math.floor(Math.random() * 50) + 10;
-          mockEvents.push({
-            id: 'evt_mock_' + Math.random().toString(36).substr(2, 9),
-            sessionId: session.id,
-            timestamp: new Date(sessTime + currentOffset).toISOString(),
-            type: 'interaction',
-            category: 'Box Model Tool',
-            label: `Adjusted Box Padding to ${padding}px`,
-            value: padding
-          });
-        }
+  // Live responsive community online user simulation
+  initLiveVisitorSimulator() {
+    // True and unique client session counter: displays exactly 1 online visitor (the local user)
+    document.addEventListener('DOMContentLoaded', () => {
+      const userCountVal = document.getElementById('js-active-users');
+      if (userCountVal) {
+        userCountVal.textContent = "1";
+        localStorage.setItem('da_live_online_users', "1");
       }
     });
 
-    localStorage.setItem(this.logsKey, JSON.stringify(mockEvents));
-    console.log('[Analytics] Successfully seeded mock telemetry data.');
-    
-    // Trigger window update
-    window.dispatchEvent(new CustomEvent('da_analytics_mock_seeded'));
+    // Listen for storage events in case it needs syncing
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'da_live_online_users') {
+        const userCountVal = document.getElementById('js-active-users');
+        if (userCountVal) {
+          userCountVal.textContent = "1";
+        }
+      }
+    });
   }
 }
 
