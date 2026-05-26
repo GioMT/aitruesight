@@ -22,3 +22,6 @@ npm-debug.log*
 
 # Staging/Build compilations on Desktop
 /Automation_Learning_Hub.html
+
+# Local Netlify folder
+.netlify

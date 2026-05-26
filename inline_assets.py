@@ -94,6 +94,7 @@ compilation_map = [
     ("index.html", "/Users/giotub/Desktop/Automation_Learning_Hub.html"),
     ("social-automation.html", "/Users/giotub/Desktop/social-automation.html"),
     ("web-development.html", "/Users/giotub/Desktop/web-development.html"),
+    ("notebooklm-masterclass.html", "/Users/giotub/Desktop/notebooklm-masterclass.html"),
     ("dashboard.html", "/Users/giotub/Desktop/dashboard.html")
 ]
 

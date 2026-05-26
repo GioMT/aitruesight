@@ -60,7 +60,7 @@ class AnalyticsEngine {
           img.src = 'aitruesight.png';
         });
         faviconElements.forEach(link => {
-          link.href = 'aitruesight.png?v=2';
+          link.href = 'aitruesight.png?v=3';
           link.type = 'image/png';
         });
         if (previewImg) {
