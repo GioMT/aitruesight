@@ -1,8 +1,8 @@
 /* --- HIDDEN METRICS DASHBOARD STYLES --- */
 :root {
-  --db-glow-primary: rgba(0, 242, 254, 0.15);
-  --db-glow-accent: rgba(255, 8, 68, 0.15);
-  --db-glow-success: rgba(16, 185, 129, 0.15);
+  --db-glow-primary: rgba(0, 86, 210, 0.08);
+  --db-glow-accent: rgba(216, 34, 78, 0.08);
+  --db-glow-success: rgba(16, 185, 129, 0.08);
 }
 
 /* Dashboard Overlay Panel */
@@ -38,7 +38,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 
               inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
+  border-radius: 6px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -59,7 +59,7 @@
   left: 0;
   width: 100%;
   height: 4px;
-  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+  background: var(--primary);
   z-index: 10;
 }
 
@@ -124,7 +124,6 @@
   background: rgba(255, 8, 68, 0.1);
   color: var(--accent);
   border-color: var(--accent);
-  box-shadow: 0 0 12px var(--db-glow-accent);
 }
 
 /* Main Dashboard Body Scroll Frame */
@@ -397,7 +396,7 @@
 }
 
 .filter-btn.active {
-  background: var(--primary-glow);
+  background: rgba(0, 86, 210, 0.06);
   color: var(--primary);
   border-color: var(--primary);
 }
@@ -508,7 +507,6 @@
 .btn-db-danger:hover {
   background: var(--accent);
   color: #fff;
-  box-shadow: 0 0 15px var(--accent-glow);
 }
 
 .btn-db-action {
@@ -548,7 +546,6 @@
 .btn-db-success:hover {
   background: var(--success);
   color: #fff;
-  box-shadow: 0 0 15px var(--db-glow-success);
 }
 
 /* --- LIGHT THEME DASHBOARD OVERRIDES --- */

@@ -438,16 +438,7 @@ For each of the 3 clips, provide:
   /* ==========================================================================
      10. PDF EXPORT TRIGGER
      ========================================================================== */
-  const exportPdfBtn = document.getElementById('export-pdf-btn');
-  if (exportPdfBtn) {
-    exportPdfBtn.addEventListener('click', () => {
-      if (window.WebsiteAnalytics) {
-        window.WebsiteAnalytics.logEvent('click', 'PDF Export', 'Exported Slide PDF', 1);
-      }
-      alert('Export Tip: The browser print dialog will now open.\n\n1. Select "Destination: Save as PDF".\n2. Set "Layout: Landscape".\n3. Under "More settings", set "Margins: None" or "Minimum" to get sleek borderless slides.\n4. Click Save!');
-      window.print();
-    });
-  }
+
 
   // --- PRO THEME SELECTOR SWITCH ---
   const themeToggleBtn = document.getElementById('theme-toggle-btn');
@@ -467,7 +458,7 @@ For each of the 3 clips, provide:
   }
 
   // Load theme preference on launch
-  const savedTheme = localStorage.getItem('da_theme') || 'dark';
+  const savedTheme = localStorage.getItem('da_theme') || 'light';
   updateThemeUI(savedTheme);
 
   if (themeToggleBtn) {
@@ -484,89 +475,6 @@ For each of the 3 clips, provide:
   }
 
   // --- DYNAMIC AD BANNER INJECTION SYSTEM (AGGRESSIVE & CLEAN) ---
-  const AD_BRANDS = [
-    {
-      brand: 'Nespresso',
-      headline: 'Press to Explore. Discover the art of premium espresso at home.',
-      cta: 'Shop Now',
-      color: 'var(--warning)',
-      gradient: 'linear-gradient(135deg, var(--warning), var(--accent))',
-      shadow: 'rgba(245, 158, 11, 0.15)',
-      alertMsg: 'Redirecting to Nespresso store page...',
-      icon: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/>'
-    },
-    {
-      brand: 'Claude AI',
-      headline: 'Integrate Claude directly inside your automation workflows. Build smarter.',
-      cta: 'Try Claude',
-      color: 'var(--primary)',
-      gradient: 'linear-gradient(135deg, var(--primary), var(--secondary))',
-      shadow: 'rgba(0, 242, 254, 0.15)',
-      alertMsg: 'Redirecting to Anthropic Claude developer portal...',
-      icon: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>'
-    },
-    {
-      brand: 'Vercel',
-      headline: 'Deploy your web projects globally at $0 cost with instant CDN edge caching.',
-      cta: 'Deploy Now',
-      color: 'var(--accent)',
-      gradient: 'linear-gradient(135deg, var(--accent), var(--warning))',
-      shadow: 'rgba(255, 8, 68, 0.15)',
-      alertMsg: 'Redirecting to Vercel hosting registration...',
-      icon: '<polygon points="12,2 22,20 2,20"/>'
-    },
-    {
-      brand: 'Google Pixel',
-      headline: 'Find your best angles with AI-powered Camera Coach on Pixel 10 Pro.',
-      cta: 'Learn More',
-      color: 'var(--success)',
-      gradient: 'linear-gradient(135deg, var(--success), var(--primary))',
-      shadow: 'rgba(16, 185, 129, 0.15)',
-      alertMsg: 'Redirecting to Google Pixel 10 Pro product overview...',
-      icon: '<rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/>'
-    },
-    {
-      brand: 'Leonardo.ai',
-      headline: 'Generate photorealistic graphics and high-CTR viral assets in seconds.',
-      cta: 'Generate Now',
-      color: 'var(--warning)',
-      gradient: 'linear-gradient(135deg, var(--warning), var(--secondary))',
-      shadow: 'rgba(245, 158, 11, 0.15)',
-      alertMsg: 'Redirecting to Leonardo.ai creative studio...',
-      icon: '<path d="M12 2L2 22h20L12 2zM12 6l6.5 13h-13L12 6z"/>'
-    },
-    {
-      brand: 'ElevenLabs',
-      headline: 'Create natural, emotional AI voices for YouTube automated flywheels instantly.',
-      cta: 'Create Voices',
-      color: 'var(--primary)',
-      gradient: 'linear-gradient(135deg, var(--primary), var(--accent))',
-      shadow: 'rgba(0, 242, 254, 0.15)',
-      alertMsg: 'Redirecting to ElevenLabs voice synthesizers...',
-      icon: '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3"/>'
-    },
-    {
-      brand: 'CapCut PC',
-      headline: 'Stitch, transition, and add auto-captions to your vertical clips for free.',
-      cta: 'Download Editor',
-      color: 'var(--success)',
-      gradient: 'linear-gradient(135deg, var(--success), var(--secondary))',
-      shadow: 'rgba(16, 185, 129, 0.15)',
-      alertMsg: 'Redirecting to CapCut PC official download portal...',
-      icon: '<rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/>'
-    },
-    {
-      brand: 'Cloudflare',
-      headline: 'Accelerate, protect, and secure your domain DNS with global CDN proxying.',
-      cta: 'Secure Domain',
-      color: 'var(--accent)',
-      gradient: 'linear-gradient(135deg, var(--accent), var(--primary))',
-      shadow: 'rgba(255, 8, 68, 0.15)',
-      alertMsg: 'Redirecting to Cloudflare security configuration gateway...',
-      icon: '<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>'
-    }
-  ];
-
   function injectAdBanners() {
     const mainColumns = document.querySelectorAll('.academy-main-col');
     mainColumns.forEach(mainCol => {
@@ -575,28 +483,14 @@ For each of the 3 clips, provide:
       sections.forEach((section, idx) => {
         if (idx === sections.length - 1) return; // Skip the last section since skyscraper fits there
         
-        const adData = AD_BRANDS[idx % AD_BRANDS.length];
-        
         const adContainer = document.createElement('div');
         adContainer.className = 'in-content-ad-container';
+        adContainer.style.padding = '0';
+        adContainer.style.border = 'none';
         adContainer.innerHTML = `
-          <span class="ad-label">Advertisement - Continue Reading Below</span>
-          <div class="simulated-ad-card ad-banner">
-            <span class="ad-opt-out" onclick="this.parentElement.parentElement.style.display='none';">×</span>
-            <div class="ad-banner-flex">
-              <div class="ad-banner-visual">
-                <div class="ad-visual-glow" style="background: radial-gradient(circle, ${adData.color}1f 0%, transparent 70%);"></div>
-                <svg class="ad-svg-icon" viewBox="0 0 24 24" style="fill: ${adData.color};">${adData.icon}</svg>
-              </div>
-              <div class="ad-banner-info">
-                <div class="ad-banner-text">
-                  <div class="ad-brand">${adData.brand}</div>
-                  <div class="ad-headline" style="margin-bottom: 0;">${adData.headline}</div>
-                </div>
-                <button class="ad-cta-btn" style="background: ${adData.gradient}; box-shadow: 0 4px 12px ${adData.shadow};" onclick="alert('${adData.alertMsg}');">${adData.cta}</button>
-              </div>
-            </div>
-          </div>
+          <!-- FUTURE IN-CONTENT AD PLACEHOLDER -->
+          <!-- In the future, replace this placeholder with your ad network banner code snippet -->
+          <div class="ad-placeholder-banner" style="display: none;"></div>
         `;
         
         section.parentNode.insertBefore(adContainer, section.nextSibling);
@@ -606,18 +500,6 @@ For each of the 3 clips, provide:
 
   // Inject Ad Banners dynamic placements
   injectAdBanners();
-
-  // --- SIMULATED AD TELEMETRY BINDINGS ---
-  const adCtaButtons = document.querySelectorAll('.ad-cta-btn');
-  adCtaButtons.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const card = e.target.closest('.simulated-ad-card');
-      const brand = card ? card.querySelector('.ad-brand').textContent : 'Generic';
-      if (window.WebsiteAnalytics) {
-        window.WebsiteAnalytics.logEvent('click', 'Monetization Ads', `Clicked Simulated Ad: ${brand}`);
-      }
-    });
-  });
 
   // --- INITIALIZE ALL ACTIVE MODULES SAFELY ---
 

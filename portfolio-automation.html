@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      const div = document.createElement('div');
+      div.style.position = 'fixed';
+      div.style.top = '0';
+      div.style.left = '0';
+      div.style.width = '100vw';
+      div.style.height = '100vh';
+      div.style.background = 'rgba(0,0,0,0.95)';
+      div.style.color = '#ff3366';
+      div.style.fontFamily = 'monospace';
+      div.style.padding = '40px';
+      div.style.zIndex = '999999';
+      div.style.overflow = 'auto';
+      div.innerHTML = '<h1>Global JavaScript Error Caught:</h1>' +
+                      '<p><strong>Message:</strong> ' + message + '</p>' +
+                      '<p><strong>Source:</strong> ' + source + ' (Line ' + lineno + ', Col ' + colno + ')</p>' +
+                      '<pre style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px;">' + (error ? error.stack : 'No stack trace available') + '</pre>';
+      document.body.appendChild(div);
+      return false;
+    };
+    window.onunhandledrejection = function(event) {
+      const div = document.createElement('div');
+      div.style.position = 'fixed';
+      div.style.top = '0';
+      div.style.left = '0';
+      div.style.width = '100vw';
+      div.style.height = '100vh';
+      div.style.background = 'rgba(0,0,0,0.95)';
+      div.style.color = '#ffcc00';
+      div.style.fontFamily = 'monospace';
+      div.style.padding = '40px';
+      div.style.zIndex = '999999';
+      div.style.overflow = 'auto';
+      div.innerHTML = '<h1>Unhandled Promise Rejection caught:</h1>' +
+                      '<p><strong>Reason:</strong> ' + event.reason + '</p>';
+      document.body.appendChild(div);
+    };
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Automation Guides - AI True Sight</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="aitruesight.png?v=3">
+  <link rel="icon" type="image/png" sizes="192x192" href="aitruesight.png?v=3">
+  <link rel="apple-touch-icon" href="aitruesight.png?v=3">
+  <link rel="stylesheet" href="src/css/index.css">
+  <link rel="stylesheet" href="src/css/dashboard.css">
+  <style>
+    /* Premium visual styling for step-by-step simulator */
+    .prereq-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    .prereq-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--primary);
+    }
+    .prereq-checkbox {
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid var(--text-muted);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-fast);
+      color: transparent;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+    .prereq-item.checked .prereq-checkbox {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+    .prereq-item.checked span {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    /* Stepper UI */
+    .stepper-container {
+      background: rgba(18, 20, 32, 0.25);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    }
+    .stepper-nav {
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .step-dots {
+      display: flex;
+      gap: 8px;
+    }
+    .step-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    .step-dot.active {
+      background: var(--primary);
+      box-shadow: 0 0 8px var(--primary-glow);
+    }
+    .step-dot.completed {
+      background: var(--success);
+    }
+    .stepper-body {
+      display: grid;
+      grid-template-columns: 1fr;
+      min-height: 480px;
+    }
+    @media (min-width: 992px) {
+      .stepper-body {
+        grid-template-columns: 1fr 1.2fr;
+      }
+    }
+    .stepper-instructions {
+      padding: 40px;
+      border-right: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    @media (min-width: 992px) {
+      .stepper-instructions {
+        border-right: 1px solid var(--border-color);
+      }
+    }
+    .stepper-visualizer {
+      background: #0d0f17;
+      padding: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Zapier Simulator Node Styling */
+    .zap-node {
+      width: 100%;
+      max-width: 340px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      position: relative;
+      transition: var(--transition-smooth);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .zap-node.active {
+      border-color: var(--primary);
+      background: rgba(0, 242, 254, 0.03);
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+    .zap-node.glowing-btn {
+      border-color: var(--warning);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+    }
+    .zap-connector {
+      width: 2px;
+      height: 20px;
+      background: var(--border-color);
+      margin: -20px auto 0 auto;
+      transition: var(--transition-fast);
+    }
+    .zap-connector.active {
+      background: var(--primary);
+      box-shadow: 0 0 8px var(--primary-glow);
+    }
+    .zap-node-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      border: 1px solid var(--border-color);
+    }
+    .zap-node-info {
+      flex-grow: 1;
+    }
+    .zap-node-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #fff;
+    }
+    .zap-node-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .zap-node-pill {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 0.65rem;
+      font-weight: 700;
+    }
+
+    /* Zapier details overlay */
+    .zap-overlay-panel {
+      position: absolute;
+      top: 5%;
+      left: 5%;
+      width: 90%;
+      height: 90%;
+      background: var(--bg-sidebar);
+      border: 1.5px solid var(--border-color);
+      border-radius: 6px;
+      padding: 24px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    }
+    .zap-overlay-panel.active {
+      transform: translateY(0);
+      opacity: 1;
+      border-color: var(--primary);
+    }
+    .zap-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+    .zap-panel-title {
+      font-weight: bold;
+      color: var(--text-main);
+      font-size: 1rem;
+    }
+    .zap-field {
+      margin-bottom: 16px;
+    }
+    .zap-field-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .zap-field-value {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      padding: 10px 12px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .variable-pill {
+      background: rgba(0, 242, 254, 0.08);
+      border: 1px solid rgba(0, 242, 254, 0.15);
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Make.com Node Canvas Styling */
+    .make-canvas {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 380px;
+    }
+    .make-node {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--bg-sidebar);
+      border: 2px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      z-index: 5;
+    }
+    .make-node.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 20px var(--primary-glow);
+      transform: scale(1.1);
+    }
+    .make-node img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+    .make-node-label {
+      position: absolute;
+      bottom: -32px;
+      width: 120px;
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: var(--transition-fast);
+    }
+    .make-node.active .make-node-label {
+      color: var(--text-main);
+    }
+    .make-connection-line {
+      position: absolute;
+      background: var(--border-color);
+      height: 2px;
+      z-index: 1;
+      transform-origin: left center;
+      transition: var(--transition-smooth);
+    }
+    .make-connection-line.active {
+      background: var(--primary);
+      box-shadow: 0 0 8px var(--primary-glow);
+    }
+
+    /* Callout visual boxes */
+    .callout-box-warning {
+      background: rgba(245, 158, 11, 0.02);
+      border-left: 4px solid var(--warning);
+      border-radius: 0 12px 12px 0;
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+    .callout-title-warning {
+      font-weight: 800;
+      color: var(--warning);
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      font-family: var(--font-display);
+    }
+
+    /* --- SECTION SWITCHER: Show only the active guide --- */
+    .section-wrapper {
+      display: none;
+      animation: sectionFadeIn 0.35s ease;
+    }
+    .section-wrapper.active-section {
+      display: block;
+    }
+    @keyframes sectionFadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <!-- GLOBAL SVG DEFINITIONS (GRADIENTS & GLOWS) -->
+  <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+    <defs>
+      <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="var(--primary)" />
+        <stop offset="100%" stop-color="var(--secondary)" />
+      </linearGradient>
+      <linearGradient id="secondaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="var(--secondary)" />
+        <stop offset="100%" stop-color="var(--accent)" />
+      </linearGradient>
+      <radialGradient id="radialGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="var(--primary-glow)" stop-opacity="1" />
+        <stop offset="100%" stop-color="var(--bg-main)" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+  </svg>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  
+  <div class="app-container">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar" id="flex-left-nav-container">
+      <div class="sidebar-brand">
+        <a href="index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit;">
+          <div class="brand-logo" style="background: transparent; box-shadow: none;">
+            <img src="aitruesight.png" alt="AI True Sight Logo">
+          </div>
+          <span style="font-weight: 800; font-family: var(--font-display); letter-spacing: 0.5px; font-size: 1rem; color: var(--text-main);">AI True Sight</span>
+        </a>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-header">Automation Guides</li>
+        <a href="#intro" class="nav-item active js-nav-anchor">
+          <span class="nav-icon"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path d="M9 21h6v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-1.3l-.85-.6C8.55 13.16 8 11.77 8 9c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.77-.55 4.16-1.15 5.1z" fill="currentColor"/></svg></span> Intro: Portfolio Launch
+        </a>
+        <a href="#guide1" class="nav-item js-nav-anchor">
+          <span class="nav-icon"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor"/></svg></span> Lead Routing (Zapier)
+        </a>
+        <a href="#guide2" class="nav-item js-nav-anchor">
+          <span class="nav-icon"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm-6 8c0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3c-3.31 0-6-2.69-6-6z" fill="currentColor"/></svg></span> Cross-Posting (Make)
+        </a>
+        <a href="#guide3" class="nav-item js-nav-anchor">
+          <span class="nav-icon"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="2"/><line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="2"/><line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="2"/></svg></span> KPI Digests (Make)
+        </a>
+        <a href="#guide4" class="nav-item js-nav-anchor">
+          <span class="nav-icon"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4H6zm4 2h4v2h-4V4zm-5 4h14v12H5V8zm4 3a3 3 0 0 0 6 0" stroke="currentColor" stroke-width="2" fill="none"/></svg></span> Shopify SMS (Zapier)
+        </a>
+        <a href="#builder" class="nav-item js-nav-anchor">
+          <span class="nav-icon"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" stroke="currentColor" stroke-width="2" fill="none"/></svg></span> Portfolio Builder Tool
+        </a>
+      </ul>
+      <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-color);">
+        <a href="index.html" class="nav-item" style="color: var(--accent); text-decoration: none;">
+          <span class="nav-icon"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Back to Home
+        </a>
+      </div>
+    </aside>
+    
+    <!-- MAIN DISPLAY FRAME -->
+    <main class="main-content">
+      
+      <!-- TOP STATUS BAR -->
+      <header class="top-header">
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" title="Toggle Navigation Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="index.html" class="brand-section" id="top-brand-trigger" style="margin-bottom: 0; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
+          <div class="brand-logo" style="background: transparent; box-shadow: none;">
+            <img src="aitruesight.png" alt="AI True Sight Logo">
+          </div>
+          <div class="brand-name">AI True Sight</div>
+        </a>
+        
+        <div class="header-actions" style="display: flex; align-items: center; gap: 16px;">
+          <!-- Real-time Engagement Pill -->
+          <div class="header-stat-pill" style="display: flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); padding: 5px 10px; border-radius: 12px; font-size: 0.72rem;">
+            <span class="dash-pulse"></span>
+            <span style="color: var(--text-muted); font-weight: 500;"><strong id="js-active-users" style="color: var(--text-main); font-weight: 700;">1</strong> online</span>
+          </div>
+
+          <!-- PRO THEME SELECTOR SWITCH -->
+          <button class="theme-toggle-btn" id="theme-toggle-btn" title="Toggle Light/Dark Theme" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); color: var(--text-muted); cursor: pointer; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; transition: var(--transition-fast);">
+            <svg class="svg-icon theme-sun-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px; display: none;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <svg class="svg-icon theme-moon-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- ACADEMY CONTENT PANEL -->
+      <div class="academy-panel active" style="display: block;">
+        
+        <div class="academy-layout-grid">
+          <!-- Main Academy Content Column -->
+          <div class="academy-main-col">
+
+            <!-- INTRO -->
+            <section class="section-wrapper" id="intro">
+              <div class="grid-split">
+                <div class="content-block reveal-left">
+                  <span class="card-badge" style="background: rgba(245, 158, 11, 0.06); color: var(--warning); margin-bottom: 12px; display: inline-block;">Masterclass 04</span>
+                  <h2>Build Your First <br><span class="text-highlight">Automation Portfolio</span></h2>
+                  <p class="section-subtitle">To win high-paying agency gigs or developer roles in 2026, you need proof of execution. Look over my shoulder as we build click-by-click. These growing step-by-step guides walk you through zero-overhead automation setups that impress clients.</p>
+                  
+                  <div class="callout-box-warning">
+                    <div class="callout-title-warning">Over-My-Shoulder Learning</div>
+                    <p style="font-size: 0.85rem; color: var(--text-main); line-height: 1.5;">
+                      Fear of clicking the wrong button or getting lost? Don't worry. This course is designed specifically for anxious beginners. You will look directly over my shoulder as we click through each configuration together. We assume zero prior experience and guide you through HubSpot CRM routing, cross-posting hubs, scheduled Digests, and Twilio SMS integrations click-by-click.
+                    </p>
+                  </div>
+                </div>
+                <div class="layout-visual reveal-right">
+                  <svg class="visual-svg glow-svg-element" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="200" cy="200" r="180" fill="rgba(245, 158, 11, 0.02)" />
+                    <rect x="80" y="50" width="240" height="50" rx="8" fill="#1b1c2b" stroke="var(--warning)" stroke-width="2" />
+                    <text x="200" y="80" fill="#fff" font-family="Outfit" font-size="12" font-weight="bold" text-anchor="middle">1. Lead Routing (Zapier)</text>
+                    
+                    <rect x="80" y="115" width="240" height="50" rx="8" fill="#1b1c2b" stroke="var(--primary)" stroke-width="2" />
+                    <text x="200" y="145" fill="#fff" font-family="Outfit" font-size="12" font-weight="bold" text-anchor="middle">2. Cross-Posting (Make)</text>
+                    
+                    <rect x="80" y="180" width="240" height="50" rx="8" fill="#1b1c2b" stroke="var(--secondary)" stroke-width="2" />
+                    <text x="200" y="210" fill="#fff" font-family="Outfit" font-size="12" font-weight="bold" text-anchor="middle">3. KPI Digests (Make)</text>
+
+                    <rect x="80" y="245" width="240" height="50" rx="8" fill="#1b1c2b" stroke="var(--accent)" stroke-width="2" />
+                    <text x="200" y="275" fill="#fff" font-family="Outfit" font-size="12" font-weight="bold" text-anchor="middle">4. E-commerce SMS (Zapier)</text>
+
+                    <rect x="80" y="310" width="240" height="50" rx="8" fill="rgba(255,255,255,0.02)" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4" />
+                    <text x="200" y="340" fill="var(--text-muted)" font-family="Outfit" font-size="12" font-weight="bold" text-anchor="middle">5. More Guides Coming Soon...</text>
+                  </svg>
+                </div>
+              </div>
+            </section>
+
+            <!-- GUIDE 1: LEAD ROUTING -->
+            <section class="section-wrapper" id="guide1">
+              <div class="reveal">
+                <span class="card-badge" style="background: rgba(0, 242, 254, 0.08); color: var(--primary);">Guide 1: Zapier</span>
+                <h2 style="margin-top: 12px; margin-bottom: 8px;">Lead Capture & CRM Routing</h2>
+                <p class="section-subtitle" style="margin-bottom: 24px;">Setup a pipeline linking Google Forms responses directly to HubSpot CRM and sending instant team notifications on Slack.</p>
+              </div>
+
+              <!-- Prerequisites -->
+              <div class="reveal" style="margin-bottom: 24px;">
+                <h4 style="margin-bottom: 12px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Prerequisites Checklist</h4>
+                <div class="prereq-item js-prereq" data-guide="1">
+                  <div class="prereq-checkbox"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg></div>
+                  <span>A live Google Form with at least one mock response submitted</span>
+                </div>
+                <div class="prereq-item js-prereq" data-guide="1">
+                  <div class="prereq-checkbox"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg></div>
+                  <span>Free account registered on Zapier</span>
+                </div>
+                <div class="prereq-item js-prereq" data-guide="1">
+                  <div class="prereq-checkbox"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg></div>
+                  <span>Free HubSpot developer account initialized</span>
+                </div>
+                <div class="prereq-item js-prereq" data-guide="1">
+                  <div class="prereq-checkbox"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg></div>
+                  <span>Slack workspace ready with a `#sales-leads` channel</span>
+                </div>
+              </div>
+
+              <!-- Stepper Container -->
+              <div class="stepper-container reveal" id="stepper-guide1">
+                <div class="stepper-nav">
+                  <div class="step-dots" id="dots-g1">
+                    <!-- Dots generated by JS -->
+                  </div>
+                  <div style="font-size: 0.8rem; font-weight: 700; color: var(--primary);" id="indicator-g1">Step 1 of 9</div>
+                </div>
+                <div class="stepper-body">
+                  <div class="stepper-instructions">
+                    <div>
+                      <h3 style="font-size: 1.25rem; color: #fff; margin-bottom: 12px;" id="title-g1">Create the Zap</h3>
+                      <p id="desc-g1" style="font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);">Log into your Zapier dashboard. Click the black **Create** button in the top-left corner, and select **New Zap**.</p>
+                    </div>
+                    <div style="display: flex; gap: 16px; margin-top: 32px;">
+                      <button class="btn-secondary-action js-prev-btn" data-guide="1" style="margin-bottom: 0;">← Back</button>
+                      <button class="ad-btn js-next-btn" data-guide="1" style="flex-grow: 1; padding: 10px 20px; font-family: var(--font-display); font-weight: 700;">Next Step →</button>
+                    </div>
+                  </div>
+                  <div class="stepper-visualizer">
+                    <!-- Zapier Simulator UI Mockup -->
+                    <div style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 340px;">
+                      <div class="zap-node" id="g1-node1">
+                        <div class="zap-node-icon">
+                          <svg class="svg-icon" viewBox="0 0 24 24" style="width: 20px; height: 20px; color: var(--primary);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="zap-node-info">
+                          <div class="zap-node-title">1. Trigger: Google Forms</div>
+                          <div class="zap-node-desc">New Response in Spreadsheet</div>
+                        </div>
+                        <span class="zap-node-pill">App</span>
+                      </div>
+                      <div class="zap-connector" id="g1-conn1"></div>
+                      <div class="zap-node" id="g1-node2">
+                        <div class="zap-node-icon">
+                          <svg class="svg-icon" viewBox="0 0 24 24" style="width: 20px; height: 20px; color: var(--warning);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" fill="none"/><path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2"/><path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2"/></svg>
+                        </div>
+                        <div class="zap-node-info">
+                          <div class="zap-node-title">2. Action: HubSpot</div>
+                          <div class="zap-node-desc">Create or Update Contact</div>
+                        </div>
+                        <span class="zap-node-pill">App</span>
+                      </div>
+                      <div class="zap-connector" id="g1-conn2"></div>
+                      <div class="zap-node" id="g1-node3">
+                        <div class="zap-node-icon">
+                          <svg class="svg-icon" viewBox="0 0 24 24" style="width: 20px; height: 20px; color: var(--success);"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523 2.528 2.528 0 0 1-2.522-2.523 2.528 2.528 0 0 1 2.522-2.52h2.52v2.52zm1.261 0a2.528 2.528 0 0 1 2.52-2.52h5.043a2.528 2.528 0 0 1 2.522 2.52v5.042a2.528 2.528 0 0 1-2.522 2.52H8.823a2.528 2.528 0 0 1-2.52-2.52v-5.042z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="zap-node-info">
+                          <div class="zap-node-title">3. Action: Slack</div>
+                          <div class="zap-node-desc">Send Channel Message</div>
+                        </div>
+                        <span class="zap-node-pill">App</span>
+                      </div>
+                      
+                      <!-- Floating Details Overlay representing fields dialog -->
+                      <div class="zap-overlay-panel" id="g1-panel">
+                        <!-- Filled dynamically based on step -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Real-World Testing Callout -->
+              <div class="callout-box" style="margin-top: 32px;">
+                <div class="callout-title" style="color: var(--primary);">Real-World Verification Tips</div>
+                <p style="font-size: 0.85rem; color: var(--text-main); line-height: 1.5; margin-bottom: 0;">
+                  <strong>Google Forms Webhook:</strong> Make sure your Google Form is linked to a Google Sheet. It's often easiest to trigger from Google Sheets using "New Spreadsheet Row" if your form data requires custom pre-processing or spreadsheet formula calculations.<br>
+                  <strong>HubSpot Scopes:</strong> When connecting Zapier to HubSpot, make sure to grant read/write permissions for contacts. The default OAuth pop-up will handle this, but verify you are using an admin or developer sandbox user.
+                </p>
+              </div>
+            </section>
+
+            <!-- GUIDE 2: CROSS POSTING -->
+            <section class="section-wrapper" id="guide2">
+              <div class="reveal">
+                <span class="card-badge" style="background: rgba(168, 85, 247, 0.08); color: #a855f7;">Guide 2: Make.com</span>
+                <h2 style="margin-top: 12px; margin-bottom: 8px;">Multi-Platform Cross-Posting</h2>
+                <p class="section-subtitle" style="margin-bottom: 24px;">Automatically sync social media queue rows from a Google Sheet and push them out to LinkedIn and Twitter simultaneously using a Router.</p>
+              </div>
+
+              <!-- Prerequisites -->
+              <div class="reveal" style="margin-bottom: 24px;">
+                <h4 style="margin-bottom: 12px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Prerequisites Checklist</h4>
+                <div class="prereq-item js-prereq" data-guide="2">
+                  <div class="prereq-checkbox"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg></div>
+                  <span>Google Sheet with columns: `Post Title`, `Content`, and `Status`</span>
+                </div>
+                <div class="prereq-item js-prereq" data-guide="2">
+                  <div class="prereq-checkbox"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg></div>
+                  <span>Add one mock post row and set `Status` to `Ready`</span>
+                </div>
+                <div class="prereq-item js-prereq" data-guide="2">
+                  <div class="prereq-checkbox"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg></div>
+                  <span>Free account registered on Make.com</span>
+                </div>
+                <div class="prereq-item js-prereq" data-guide="2">
+                  <div class="prereq-checkbox"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg></div>
+                  <span>LinkedIn and Twitter (X) profiles ready for connection</span>
+                </div>
+              </div>
+
+              <!-- Stepper Container -->
+              <div class="stepper-container reveal" id="stepper-guide2">
+                <div class="stepper-nav">
+                  <div class="step-dots" id="dots-g2"></div>
+                  <div style="font-size: 0.8rem; font-weight: 700; color: #a855f7;" id="indicator-g2">Step 1 of 9</div>
+                </div>
+                <div class="stepper-body">
+                  <div class="stepper-instructions">
+                    <div>
+                      <h3 style="font-size: 1.25rem; color: #fff; margin-bottom: 12px;" id="title-g2">Initialize the Scenario</h3>
+                      <p id="desc-g2" style="font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);">Log into Make. Click the purple **Create a new scenario** button in the top-right corner. Click the large, pulsing circle with a **+** sign in the center.</p>
+                    </div>
+                    <div style="display: flex; gap: 16px; margin-top: 32px;">
+                      <button class="btn-secondary-action js-prev-btn" data-guide="2" style="margin-bottom: 0;">← Back</button>
+                      <button class="ad-btn js-next-btn" data-guide="2" style="flex-grow: 1; padding: 10px 20px; font-family: var(--font-display); font-weight: 700; background: #a855f7; color: #fff;">Next Step →</button>
+                    </div>
+                  </div>
+                  <div class="stepper-visualizer" style="background: radial-gradient(circle, #181926 0%, #0c0d15 100%);">
+                    <!-- Make.com Visual Canvas Simulator -->
+                    <div class="make-canvas" id="g2-make-canvas">
+                      <!-- Nodes & lines dynamically placed -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Real-World Testing Callout -->
+              <div class="callout-box" style="margin-top: 32px;">
+                <div class="callout-title" style="color: var(--primary);">Real-World Verification Tips</div>
+                <p style="font-size: 0.85rem; color: var(--text-main); line-height: 1.5; margin-bottom: 0;">
+                  <strong>Twitter/X Free Tier Rates:</strong> X's free basic API tier has very tight rate limits (currently restricted to ~17 automated tweets per day). During testing, limit your automated post executions to prevent temporary endpoint blocking.<br>
+                  <strong>Initial State Sync:</strong> In Make, when running a scenario for the first time, Make will ask where you'd like to start reading rows. Choose "All" or select a specific row ID for testing to verify it handles old row data correctly.
+                </p>
+              </div>
+            </section>
+
+            <!-- GUIDE 3: KPI REPORTING -->
+            <section class="section-wrapper" id="guide3">
+              <div class="reveal">
+                <span class="card-badge" style="background: rgba(16, 185, 129, 0.08); color: var(--success);">Guide 3: Make.com</span>
+                <h2 style="margin-top: 12px; margin-bottom: 8px;">Weekly KPI Reporting Digests</h2>
+                <p class="section-subtitle" style="margin-bottom: 24px;">Schedule a recurring cron scenario that reads a cell coordinate from your sheets dashboard and prints a formatted digest message in Slack.</p>
+              </div>
+
+              <!-- Prerequisites -->
+              <div class="reveal" style="margin-bottom: 24px;">
+                <h4 style="margin-bottom: 12px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Prerequisites Checklist</h4>
+                <div class="prereq-item js-prereq" data-guide="3">
+                  <div class="prereq-checkbox"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg></div>
+                  <span>Google Sheet containing a calculated metric summary (e.g. cell `B2`)</span>
+                </div>
+                <div class="prereq-item js-prereq" data-guide="3">
+                  <div class="prereq-checkbox"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg></div>
+                  <span>Make.com and Slack accounts signed in</span>
+                </div>
+              </div>
+
+              <!-- Stepper Container -->
+              <div class="stepper-container reveal" id="stepper-guide3">
+                <div class="stepper-nav">
+                  <div class="step-dots" id="dots-g3"></div>
+                  <div style="font-size: 0.8rem; font-weight: 700; color: var(--success);" id="indicator-g3">Step 1 of 6</div>
+                </div>
+                <div class="stepper-body">
+                  <div class="stepper-instructions">
+                    <div>
+                      <h3 style="font-size: 1.25rem; color: #fff; margin-bottom: 12px;" id="title-g3">Set the Schedule</h3>
+                      <p id="desc-g3" style="font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);">Create a fresh scenario in Make. Click the tiny clock icon attached to the default blank module circle. In the **Run scenario** dropdown, switch it to **Days of the week**. Check **Monday**, type `09:00` into the time input fields, and click **OK**.</p>
+                    </div>
+                    <div style="display: flex; gap: 16px; margin-top: 32px;">
+                      <button class="btn-secondary-action js-prev-btn" data-guide="3" style="margin-bottom: 0;">← Back</button>
+                      <button class="ad-btn js-next-btn" data-guide="3" style="flex-grow: 1; padding: 10px 20px; font-family: var(--font-display); font-weight: 700; background: var(--success); color: #fff;">Next Step →</button>
+                    </div>
+                  </div>
+                  <div class="stepper-visualizer" style="background: radial-gradient(circle, #141c1f 0%, #0a0e12 100%);">
+                    <!-- Make.com Visual Canvas Simulator -->
+                    <div class="make-canvas" id="g3-make-canvas">
+                      <!-- Nodes & lines dynamically placed -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Real-World Testing Callout -->
+              <div class="callout-box" style="margin-top: 32px;">
+                <div class="callout-title" style="color: var(--primary);">Real-World Verification Tips</div>
+                <p style="font-size: 0.85rem; color: var(--text-main); line-height: 1.5; margin-bottom: 0;">
+                  <strong>Formula Output Sync:</strong> If the target cell (e.g. `B2`) contains spreadsheet calculations, Make's Google Sheets module retrieves the calculated output value. Make sure you check "Value Render Option: Formatted Value" in the module setup so that symbols like `$` or `%` are cleanly pushed to Slack without losing formatting.
+                </p>
+              </div>
+            </section>
+
+            <!-- GUIDE 4: E-COMMERCE ORDER NOTIFICATIONS -->
+            <section class="section-wrapper" id="guide4">
+              <div class="reveal">
+                <span class="card-badge" style="background: rgba(255, 8, 68, 0.08); color: var(--accent);">Guide 4: Zapier</span>
+                <h2 style="margin-top: 12px; margin-bottom: 8px;">E-commerce Order Notifications</h2>
+                <p class="section-subtitle" style="margin-bottom: 24px;">Connect Shopify triggers with Twilio SMS dispatch, routing customers' phones through a Formatter logic interceptor to structure numbers correctly.</p>
+              </div>
+
+              <!-- Prerequisites -->
+              <div class="reveal" style="margin-bottom: 24px;">
+                <h4 style="margin-bottom: 12px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Prerequisites Checklist</h4>
+                <div class="prereq-item js-prereq" data-guide="4">
+                  <div class="prereq-checkbox"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg></div>
+                  <span>Shopify store login or a developer sandbox store access</span>
+                </div>
+                <div class="prereq-item js-prereq" data-guide="4">
+                  <div class="prereq-checkbox"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg></div>
+                  <span>Twilio developer account with an active virtual phone number</span>
+                </div>
+                <div class="prereq-item js-prereq" data-guide="4">
+                  <div class="prereq-checkbox"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg></div>
+                  <span>Zapier account signed in</span>
+                </div>
+              </div>
+
+              <!-- Stepper Container -->
+              <div class="stepper-container reveal" id="stepper-guide4">
+                <div class="stepper-nav">
+                  <div class="step-dots" id="dots-g4"></div>
+                  <div style="font-size: 0.8rem; font-weight: 700; color: var(--accent);" id="indicator-g4">Step 1 of 7</div>
+                </div>
+                <div class="stepper-body">
+                  <div class="stepper-instructions">
+                    <div>
+                      <h3 style="font-size: 1.25rem; color: #fff; margin-bottom: 12px;" id="title-g4">Initialize Shopify</h3>
+                      <p id="desc-g4" style="font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);">Create a new Zap in your Zapier dashboard. Choose **Shopify** for your trigger step. Set the **Event** dropdown to **New Order** and hit **Continue**. Sign in by entering your primary `.myshopify.com` store URL string.</p>
+                    </div>
+                    <div style="display: flex; gap: 16px; margin-top: 32px;">
+                      <button class="btn-secondary-action js-prev-btn" data-guide="4" style="margin-bottom: 0;">← Back</button>
+                      <button class="ad-btn js-next-btn" data-guide="4" style="flex-grow: 1; padding: 10px 20px; font-family: var(--font-display); font-weight: 700; background: var(--accent); color: #fff;">Next Step →</button>
+                    </div>
+                  </div>
+                  <div class="stepper-visualizer">
+                    <!-- Zapier Simulator UI Mockup -->
+                    <div style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 340px;">
+                      <div class="zap-node" id="g4-node1">
+                        <div class="zap-node-icon">
+                          <svg class="svg-icon" viewBox="0 0 24 24" style="width: 20px; height: 20px; color: var(--success);"><path d="M4.6 2.1l-.8.4C3 3 2.1 4.3 1.6 6v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c-.5-1.7-1.4-3-2.2-3.5l-.8-.4H4.6zm14.8 6.5l.6.6v11.8H4V9.2l.6-.6h14.8zM12 4a3 3 0 0 1 3 3h-6a3 3 0 0 1 3-3z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="zap-node-info">
+                          <div class="zap-node-title">1. Trigger: Shopify</div>
+                          <div class="zap-node-desc">New Order</div>
+                        </div>
+                        <span class="zap-node-pill">App</span>
+                      </div>
+                      <div class="zap-connector" id="g4-conn1"></div>
+                      <div class="zap-node" id="g4-node2">
+                        <div class="zap-node-icon">
+                          <svg class="svg-icon" viewBox="0 0 24 24" style="width: 20px; height: 20px; color: var(--primary);"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="zap-node-info">
+                          <div class="zap-node-title">2. Helper: Formatter</div>
+                          <div class="zap-node-desc">Format Phone Number</div>
+                        </div>
+                        <span class="zap-node-pill">Logic</span>
+                      </div>
+                      <div class="zap-connector" id="g4-conn2"></div>
+                      <div class="zap-node" id="g4-node3">
+                        <div class="zap-node-icon">
+                          <svg class="svg-icon" viewBox="0 0 24 24" style="width: 20px; height: 20px; color: var(--accent);"><rect x="5" y="2" width="14" height="20" rx="2" ry="2" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="18" x2="12" y2="18" stroke="currentColor" stroke-width="2"/></svg>
+                        </div>
+                        <div class="zap-node-info">
+                          <div class="zap-node-title">3. Action: Twilio</div>
+                          <div class="zap-node-desc">Send SMS</div>
+                        </div>
+                        <span class="zap-node-pill">App</span>
+                      </div>
+                      
+                      <!-- Floating Details Overlay representing fields dialog -->
+                      <div class="zap-overlay-panel" id="g4-panel">
+                        <!-- Filled dynamically based on step -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Real-World Testing Callout -->
+              <div class="callout-box" style="margin-top: 32px;">
+                <div class="callout-title" style="color: var(--primary);">Real-World Verification Tips</div>
+                <p style="font-size: 0.85rem; color: var(--text-main); line-height: 1.5; margin-bottom: 0;">
+                  <strong>Twilio Trial Accounts:</strong> If you are testing this using a free Twilio developer account, Twilio will only send SMS messages to phone numbers that have been manually added and verified inside your Twilio Sandbox Console. Ensure you verify your personal cell number there first.<br>
+                  <strong>Empty Phone Safeguard:</strong> If a Shopify customer checks out without inputting a phone number, the Formatter step will receive a blank/null value and fail. In the real world, add a "Filter by Zapier" step right after Shopify to only continue if the customer phone number field is present.
+                </p>
+              </div>
+            </section>
+
+            <!-- PORTFOLIO BUILDER TOOL -->
+            <section class="section-wrapper" id="builder">
+              <div class="reveal">
+                <span class="card-badge" style="background: rgba(245, 158, 11, 0.08); color: var(--warning);">Portfolio Tool</span>
+                <h2 style="margin-top: 12px; margin-bottom: 16px;">Automation Portfolio Card Builder</h2>
+                <p class="section-subtitle">Tuck your completed workflow builds into a formatted showcase card. Type your name, choose which automation projects you completed, and copy the formatted summary code to use on your portfolio or resume.</p>
+              </div>
+
+              <div class="calc-widget reveal" style="background: rgba(18, 20, 32, 0.2); border: 1px solid var(--border-color); border-radius: 20px; padding: 24px; margin-top: 24px;">
+                <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                      <label for="builder-name" style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Your Name</label>
+                      <input type="text" id="builder-name" value="Alex Rivera" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; color: #fff; outline: none; font-family: var(--font-body);">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                      <label for="builder-title" style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Portfolio Subtitle</label>
+                      <input type="text" id="builder-title" value="Automation Engineer & Integrator" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; color: #fff; outline: none; font-family: var(--font-body);">
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 style="font-size: 0.85rem; color: var(--warning); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em;">Choose Completed Projects</h4>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+                      <label style="display: flex; align-items: center; gap: 10px; color: var(--text-main); font-size: 0.9rem; cursor: pointer;">
+                        <input type="checkbox" id="proj-lead" checked style="accent-color: var(--warning);"> Lead Capture & CRM Routing (Zapier)
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 10px; color: var(--text-main); font-size: 0.9rem; cursor: pointer;">
+                        <input type="checkbox" id="proj-post" checked style="accent-color: var(--warning);"> Multi-Platform Cross-Posting (Make)
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 10px; color: var(--text-main); font-size: 0.9rem; cursor: pointer;">
+                        <input type="checkbox" id="proj-digest" checked style="accent-color: var(--warning);"> Weekly KPI Digests (Make)
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 10px; color: var(--text-main); font-size: 0.9rem; cursor: pointer;">
+                        <input type="checkbox" id="proj-sms" checked style="accent-color: var(--warning);"> E-commerce Order Notifications (Zapier)
+                      </label>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Generated Markdown Output</label>
+                    <textarea id="builder-output" readonly style="background: #0d0f17; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; color: var(--text-main); font-family: monospace; font-size: 0.8rem; min-height: 180px; resize: vertical; outline: none;"></textarea>
+                    <button class="btn-copy" id="builder-copy-btn" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.15); color: var(--warning); padding: 12px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: var(--transition-fast);">Copy Portfolio Markdown</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+          </div> <!-- Close .academy-main-col -->
+
+          <!-- Sticky Sidebar Ad Column -->
+          <div class="academy-sidebar-col">
+            <div class="sticky-ad-wrapper">
+              <!-- FUTURE AD NETWORK CODE PLACEHOLDER -->
+              <!-- Replace this placeholder with your sidebar/skyscraper ad unit script tags -->
+              <div class="skyscraper-placeholder" style="flex-grow: 1; min-height: 540px;"></div>
+            </div>
+          </div>
+
+        </div> <!-- Close .academy-layout-grid -->
+
+        <!-- RETURN HOME BOTTOM BAR -->
+        <div style="padding: 40px 10%; text-align: center; border-top: 1px solid var(--border-color);">
+          <a href="index.html" class="btn-secondary-action" style="margin: 0 auto; border-color: rgba(245,158,11,0.2); text-decoration: none; display: inline-block;">← Back to Main Dashboard</a>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <script src="src/js/index.js" defer></script>
+  <script src="src/js/analytics.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // === SECTION SWITCHER (Coursera-style one-section-at-a-time) ===
+      const navAnchors = document.querySelectorAll('.js-nav-anchor');
+      const allSections = document.querySelectorAll('.section-wrapper');
+
+      function showSection(targetId) {
+        // Hide all sections
+        allSections.forEach(s => s.classList.remove('active-section'));
+        // Show the target
+        const target = document.getElementById(targetId);
+        if (target) {
+          target.classList.add('active-section');
+          // Re-trigger the fade animation
+          target.style.animation = 'none';
+          target.offsetHeight; // force reflow
+          target.style.animation = '';
+        }
+        // Update active nav state
+        navAnchors.forEach(a => a.classList.remove('active'));
+        const activeLink = document.querySelector(`.js-nav-anchor[href="#${targetId}"]`);
+        if (activeLink) activeLink.classList.add('active');
+        // Scroll main content to top
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) mainContent.scrollTop = 0;
+        // Update URL hash without scrolling
+        history.replaceState(null, '', `#${targetId}`);
+      }
+
+      // Attach click handlers to nav items
+      navAnchors.forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = anchor.getAttribute('href').replace('#', '');
+          showSection(targetId);
+          // Close mobile sidebar if open
+          const sidebar = document.getElementById('flex-left-nav-container');
+          const overlay = document.getElementById('sidebar-overlay');
+          if (sidebar) sidebar.classList.remove('open');
+          if (overlay) overlay.classList.remove('active');
+        });
+      });
+
+      // On load: show section from URL hash, or default to intro
+      const initialHash = window.location.hash.replace('#', '') || 'intro';
+      showSection(initialHash);
+
+      // Handle browser back/forward
+      window.addEventListener('hashchange', () => {
+        const hash = window.location.hash.replace('#', '') || 'intro';
+        showSection(hash);
+      });
+
+      // 1. Prerequisites ticking system
+      const prereqs = document.querySelectorAll('.js-prereq');
+      prereqs.forEach(item => {
+        item.addEventListener('click', () => {
+          item.classList.toggle('checked');
+        });
+      });
+
+      // SVG Icon Constants
+      const SVG_SHEETS = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 28px; height: 28px; color: #10b981; fill: none; stroke: currentColor; stroke-width: 2.5;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>`;
+      const SVG_ROUTER = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 28px; height: 28px; color: #a855f7; fill: none; stroke: currentColor; stroke-width: 2.5;"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M4 4l5 5M12 12l9 9"/></svg>`;
+      const SVG_LINKEDIN = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 28px; height: 28px; color: #0077b5; fill: none; stroke: currentColor; stroke-width: 2.5;"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>`;
+      const SVG_TWITTER = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 28px; height: 28px; color: #1da1f2; fill: none; stroke: currentColor; stroke-width: 2.5;"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>`;
+      const SVG_CLOCK = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 28px; height: 28px; color: #ef4444; fill: none; stroke: currentColor; stroke-width: 2.5;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+      const SVG_SLACK = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 28px; height: 28px; color: #e01e5a; fill: none; stroke: currentColor; stroke-width: 2.5;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+      const SVG_FIRE = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; color: #f97316; display: inline-block; vertical-align: middle; margin-right: 2px;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" fill="none"/></svg>`;
+      const SVG_ROCKET = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; color: var(--success); display: inline-block; vertical-align: middle; margin-right: 4px;"><path d="M4.5 16.5c-1.5 1.25-2.5 3.5-2.5 3.5s2.25-1 3.5-2.5M14 2c1.72 0 3.24.84 4.5 2L15 7.5l-3-3L14 2zm-9 9l3 3-3.5 3.5C3.34 16.24 2.5 14.72 2.5 13H5zM22 2l-3 3m-9 9l-4-4M19 19l3 3" fill="none"/></svg>`;
+      const SVG_LIGHTNING = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; color: #eab308; display: inline-block; vertical-align: middle; margin-right: 4px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="none"/></svg>`;
+      const SVG_SHOPIFY = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; color: #95bf47; display: inline-block; vertical-align: middle; margin-right: 4px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0" fill="none"/></svg>`;
+      const SVG_GEAR = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; color: var(--text-muted); display: inline-block; vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" fill="none"/></svg>`;
+      const SVG_TWILIO = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; color: #f22f46; display: inline-block; vertical-align: middle; margin-right: 4px;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2" fill="none"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`;
+      const SVG_TINY_CHECK = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 10px; height: 10px; color: var(--success); display: inline-block; vertical-align: middle; margin-right: 2px; stroke-width: 4;"><polyline points="20 6 9 17 4 12" fill="none"/></svg>`;
+      const SVG_TINY_SHEETS = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; color: #10b981; display: inline-block; vertical-align: middle; margin-right: 2px; stroke-width: 3;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" fill="none"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>`;
+
+      // 2. Click-by-click content database
+      const GUIDES_DATABASE = {
+        1: [
+          {
+            title: "Create the Zap",
+            desc: "Log into your Zapier dashboard. Click the black **Create** button in the top-left corner, and select **New Zap**.",
+            activeNode: "g1-node1",
+            overlayActive: false,
+            overlayContent: ""
+          },
+          {
+            title: "Configure the Trigger",
+            desc: "Click on the first block labeled **1. Trigger**. Type `Google Forms` in the search bar and select it. Under the **App & Event** panel on the right, open the **Event** dropdown and choose **New Response in Spreadsheet**. Click **Continue**.",
+            activeNode: "g1-node1",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">App & Event (Trigger)</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">App</span>
+                <div class="zap-field-value">
+                  <svg class="svg-icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; color: var(--primary); display: inline; vertical-align: middle; margin-right: 4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg> Google Forms
+                </div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Event</span>
+                <div class="zap-field-value">New Response in Spreadsheet</div>
+              </div>
+            `
+          },
+          {
+            title: "Link Google Account",
+            desc: "Click **Sign In** next to the Account field. In the pop-up window, grant Zapier access to your Google account, then click **Continue**.",
+            activeNode: "g1-node1",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">Account Setup</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Linked Account</span>
+                <div class="zap-field-value" style="color: var(--success);">
+                  <svg class="svg-icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; color: var(--success); display: inline; vertical-align: middle; margin-right: 4px;"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="3" fill="none"/></svg> Connected: google_user_primary@gmail.com
+                </div>
+              </div>
+            `
+          },
+          {
+            title: "Target the Spreadsheet",
+            desc: "Click the **Spreadsheet** dropdown and select the name of your Google Form's spreadsheet. Under **Worksheet**, select `Form Responses 1`. Click **Continue**.",
+            activeNode: "g1-node1",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">Trigger Configuration</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Spreadsheet</span>
+                <div class="zap-field-value">Contact Form Responses (Google Sheets)</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Worksheet</span>
+                <div class="zap-field-value">Form Responses 1</div>
+              </div>
+            `
+          },
+          {
+            title: "Pull Sample Data",
+            desc: "Click **Test Trigger**. Zapier will display data blocks labeled `Response A`. Verify you see your mock email and name, then click **Continue with selected record**.",
+            activeNode: "g1-node1",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">Test Trigger Output</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Parsed Response A</span>
+                <div class="zap-field-value" style="font-family: monospace; font-size: 0.75rem;">
+                  {<br>
+                  &nbsp;&nbsp;Name: "Alice Smith",<br>
+                  &nbsp;&nbsp;Email: "alice@example.com",<br>
+                  &nbsp;&nbsp;Message: "Looking to scale our CRM pipeline!"<br>
+                  }
+                </div>
+              </div>
+            `
+          },
+          {
+            title: "Connect HubSpot",
+            desc: "In the new empty action block, search for `HubSpot`. Set the **Event** dropdown to **Create or Update Contact** and click **Continue**. Sign into your HubSpot account.",
+            activeNode: "g1-node2",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">App & Event (Action)</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">App</span>
+                <div class="zap-field-value">
+                  <svg class="svg-icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; color: var(--warning); display: inline; vertical-align: middle; margin-right: 4px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" fill="none"/></svg> HubSpot CRM
+                </div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Event</span>
+                <div class="zap-field-value">Create or Update Contact</div>
+              </div>
+            `
+          },
+          {
+            title: "Map the Form Data",
+            desc: "In the **Action** setup tab, click inside the empty **Contact Email** box. A dropdown of your Google Form fields will appear; click the field labeled `1. Email`. Scroll down to **First Name** and select the corresponding name field. Click **Continue** and then **Test Step**.",
+            activeNode: "g1-node2",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">Configure HubSpot Fields</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Contact Email</span>
+                <div class="zap-field-value">
+                  <span class="variable-pill"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 10px; height: 10px; display: inline-block; vertical-align: middle; margin-right: 2px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg> 1. Email: alice@example.com</span>
+                </div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">First Name</span>
+                <div class="zap-field-value">
+                  <span class="variable-pill"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 10px; height: 10px; display: inline-block; vertical-align: middle; margin-right: 2px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg> 1. Name: Alice Smith</span>
+                </div>
+              </div>
+            `
+          },
+          {
+            title: "Add the Slack Step",
+            desc: "Hover your mouse below the HubSpot block, click the small **+** icon, and search for `Slack`. Set the **Event** to **Send Channel Message** and connect your Slack workspace. Select your channel (e.g., `#sales-leads`) from the dropdown.",
+            activeNode: "g1-node3",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">App & Event (Action 3)</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">App</span>
+                <div class="zap-field-value">
+                  <svg class="svg-icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; color: var(--success); display: inline; vertical-align: middle; margin-right: 4px;"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523 2.528 2.528 0 0 1-2.522-2.523 2.528 2.528 0 0 1 2.522-2.52h2.52v2.52zm1.261 0a2.528 2.528 0 0 1 2.52-2.52h5.043a2.528 2.528 0 0 1 2.522 2.52v5.042a2.528 2.528 0 0 1-2.522 2.52H8.823a2.528 2.528 0 0 1-2.52-2.52v-5.042z" fill="currentColor"/></svg> Slack
+                </div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Event</span>
+                <div class="zap-field-value">Send Channel Message</div>
+              </div>
+            `
+          },
+          {
+            title: "Write the Message & Publish",
+            desc: `Inside the **Message Text** box, type: \`${SVG_FIRE} New Lead Alert! Name: \` then click into the box and select the name pill from Step 1. Type \` | Email: \` and click the email pill from Step 1. Click **Continue**, click **Test Step**, and toggle the switch to **Publish**.`,
+            activeNode: "g1-node3",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">Configure Slack message</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Channel</span>
+                <div class="zap-field-value">#sales-leads</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Message Text</span>
+                <div class="zap-field-value">
+                  ${SVG_FIRE} New Lead Alert! Name: <span class="variable-pill"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 10px; height: 10px; display: inline-block; vertical-align: middle; margin-right: 2px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg> 1. Name: Alice Smith</span> | Email: <span class="variable-pill"><svg class="svg-icon" viewBox="0 0 24 24" style="width: 10px; height: 10px; display: inline-block; vertical-align: middle; margin-right: 2px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/></svg> 1. Email: alice@example.com</span>
+                </div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Zap Status</span>
+                <div class="zap-field-value" style="color: var(--success); font-weight: 800; display: flex; align-items: center;">${SVG_ROCKET} ACTIVE / PUBLISHED</div>
+              </div>
+            `
+          }
+        ],
+        2: [
+          {
+            title: "Initialize the Scenario",
+            desc: "Log into Make. Click the purple **Create a new scenario** button in the top-right corner. Click the large, pulsing circle with a **+** sign in the center.",
+            activeIdx: 0,
+            nodes: [
+              { id: "sheets", label: "Google Sheets", x: 60, y: 150, active: true, pulse: true, icon: SVG_SHEETS }
+            ],
+            lines: []
+          },
+          {
+            title: "Add Google Sheets",
+            desc: "Type `Google Sheets` in the search overlay and select it. From the menu of modules, choose **Watch Rows**.",
+            activeIdx: 0,
+            nodes: [
+              { id: "sheets", label: "Google Sheets<br>(Watch Rows)", x: 60, y: 150, active: true, icon: SVG_SHEETS }
+            ],
+            lines: []
+          },
+          {
+            title: "Authorize & Target",
+            desc: "Link your Google account. Under **Spreadsheet**, pick your file. Under **Sheet**, select your tab. Change the **Limit** field to `2` and click **OK**. Select **All** rows to start and click **OK**.",
+            activeIdx: 0,
+            nodes: [
+              { id: "sheets", label: "Google Sheets<br>(Authorized)", x: 60, y: 150, active: true, icon: SVG_SHEETS }
+            ],
+            lines: []
+          },
+          {
+            title: "Add a Router",
+            desc: "Hover over the right side of the Google Sheets module, click and drag a line out into the empty grid space, let go, search for `Router`, and click it.",
+            activeIdx: 1,
+            nodes: [
+              { id: "sheets", label: "Google Sheets", x: 60, y: 150, active: false, icon: SVG_SHEETS },
+              { id: "router", label: "Router", x: 180, y: 150, active: true, icon: SVG_ROUTER }
+            ],
+            lines: [
+              { from: "sheets", to: "router", active: true }
+            ]
+          },
+          {
+            title: "Build the LinkedIn Branch",
+            desc: "Click the top blank circle extending from the right side of your Router. Search for `LinkedIn` and select **Create a Text Post**. Link your account.",
+            activeIdx: 2,
+            nodes: [
+              { id: "sheets", label: "Google Sheets", x: 60, y: 150, active: false, icon: SVG_SHEETS },
+              { id: "router", label: "Router", x: 180, y: 150, active: false, icon: SVG_ROUTER },
+              { id: "linkedin", label: "LinkedIn<br>(Post)", x: 300, y: 80, active: true, icon: SVG_LINKEDIN }
+            ],
+            lines: [
+              { from: "sheets", to: "router", active: false },
+              { from: "router", to: "linkedin", active: true }
+            ]
+          },
+          {
+            title: "Map Content to LinkedIn",
+            desc: "Click the **Content** input box. From the floating data panel, click the green pill labeled `Content` (corresponds to your sheet column) and click **OK**.",
+            activeIdx: 2,
+            nodes: [
+              { id: "sheets", label: "Google Sheets", x: 60, y: 150, active: false, icon: SVG_SHEETS },
+              { id: "router", label: "Router", x: 180, y: 150, active: false, icon: SVG_ROUTER },
+              { id: "linkedin", label: "LinkedIn<br>(Mapped)", x: 300, y: 80, active: true, icon: SVG_LINKEDIN }
+            ],
+            lines: [
+              { from: "sheets", to: "router", active: false },
+              { from: "router", to: "linkedin", active: true }
+            ],
+            panel: true,
+            panelContent: `
+              <div style="background: #1c1f2e; padding: 12px; border-radius: 8px; font-size: 0.75rem; border: 1.5px solid #a855f7; margin-top: 10px;">
+                <strong>LinkedIn Post Fields:</strong><br>
+                Content: <span style="background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-top: 4px; align-items: center;">${SVG_TINY_CHECK} GoogleSheets -> Content</span>
+              </div>
+            `
+          },
+          {
+            title: "Build the Twitter Branch",
+            desc: "Click the bottom blank circle extending from your Router. Search for `Twitter` (or X) and select **Create a Tweet**. Link your account.",
+            activeIdx: 3,
+            nodes: [
+              { id: "sheets", label: "Google Sheets", x: 60, y: 150, active: false, icon: SVG_SHEETS },
+              { id: "router", label: "Router", x: 180, y: 150, active: false, icon: SVG_ROUTER },
+              { id: "linkedin", label: "LinkedIn", x: 300, y: 80, active: false, icon: SVG_LINKEDIN },
+              { id: "twitter", label: "Twitter<br>(Tweet)", x: 300, y: 220, active: true, icon: SVG_TWITTER }
+            ],
+            lines: [
+              { from: "sheets", to: "router", active: false },
+              { from: "router", to: "linkedin", active: false },
+              { from: "router", to: "twitter", active: true }
+            ]
+          },
+          {
+            title: "Map Content to Twitter",
+            desc: "Click inside the **Text** box. From the data panel, select the exact same green `Content` pill from your original Google Sheets module and click **OK**.",
+            activeIdx: 3,
+            nodes: [
+              { id: "sheets", label: "Google Sheets", x: 60, y: 150, active: false, icon: SVG_SHEETS },
+              { id: "router", label: "Router", x: 180, y: 150, active: false, icon: SVG_ROUTER },
+              { id: "linkedin", label: "LinkedIn", x: 300, y: 80, active: false, icon: SVG_LINKEDIN },
+              { id: "twitter", label: "Twitter<br>(Mapped)", x: 300, y: 220, active: true, icon: SVG_TWITTER }
+            ],
+            lines: [
+              { from: "sheets", to: "router", active: false },
+              { from: "router", to: "linkedin", active: false },
+              { from: "router", to: "twitter", active: true }
+            ],
+            panel: true,
+            panelContent: `
+              <div style="background: #1c1f2e; padding: 12px; border-radius: 8px; font-size: 0.75rem; border: 1.5px solid #a855f7; margin-top: 10px;">
+                <strong>Twitter Tweet Fields:</strong><br>
+                Text: <span style="background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-top: 4px; align-items: center;">${SVG_TINY_CHECK} GoogleSheets -> Content</span>
+              </div>
+            `
+          },
+          {
+            title: "Run and Activate",
+            desc: "Click the blue **Run once** button in the bottom-left corner to test. Verify visual numbers appear over each circle showing data passed through, then toggle the scheduling switch from **OFF** to **ON**.",
+            activeIdx: 4,
+            nodes: [
+              { id: "sheets", label: "Google Sheets", x: 60, y: 150, active: true, icon: SVG_SHEETS },
+              { id: "router", label: "Router", x: 180, y: 150, active: true, icon: SVG_ROUTER },
+              { id: "linkedin", label: "LinkedIn", x: 300, y: 80, active: true, icon: SVG_LINKEDIN },
+              { id: "twitter", label: "Twitter", x: 300, y: 220, active: true, icon: SVG_TWITTER }
+            ],
+            lines: [
+              { from: "sheets", to: "router", active: true },
+              { from: "router", to: "linkedin", active: true },
+              { from: "router", to: "twitter", active: true }
+            ],
+            panel: true,
+            panelContent: `
+              <div style="text-align: center; color: var(--success); font-weight: bold; font-size: 0.8rem; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                ${SVG_LIGHTNING} SCENARIO RUN SUCCESSFUL (1 Row Processed)<br>
+                🟢 SCHEDULE STATUS: ACTIVE / RUNNING
+              </div>
+            `
+          }
+        ],
+        3: [
+          {
+            title: "Set the Schedule",
+            desc: "Create a fresh scenario in Make. Click the tiny clock icon attached to the default blank module circle. In the **Run scenario** dropdown, switch it to **Days of the week**. Check **Monday**, type `09:00` into the time input fields, and click **OK**.",
+            activeIdx: 0,
+            nodes: [
+              { id: "timer", label: "Scheduler<br>(Mon 9:00 AM)", x: 80, y: 150, active: true, icon: SVG_CLOCK }
+            ],
+            lines: []
+          },
+          {
+            title: "Add the Google Sheets Node",
+            desc: "Click the scheduled module circle, search for `Google Sheets`, and pick the module named **Get a Cell**. Select your authorized connection, target spreadsheet, and sheet tab.",
+            activeIdx: 1,
+            nodes: [
+              { id: "timer", label: "Scheduler", x: 80, y: 150, active: false, icon: SVG_CLOCK },
+              { id: "sheets", label: "Google Sheets<br>(Get a Cell)", x: 200, y: 150, active: true, icon: SVG_SHEETS }
+            ],
+            lines: [
+              { from: "timer", to: "sheets", active: true }
+            ]
+          },
+          {
+            title: "Target the Cell Coordinates",
+            desc: "In the **Cell** text field, type the exact column letter and row number where your final metric lives (e.g., `B2`). Click **OK**.",
+            activeIdx: 1,
+            nodes: [
+              { id: "timer", label: "Scheduler", x: 80, y: 150, active: false, icon: SVG_CLOCK },
+              { id: "sheets", label: "Google Sheets<br>(Cell B2)", x: 200, y: 150, active: true, icon: SVG_SHEETS }
+            ],
+            lines: [
+              { from: "timer", to: "sheets", active: true }
+            ],
+            panel: true,
+            panelContent: `
+              <div style="background: #1c1f2e; padding: 12px; border-radius: 8px; font-size: 0.75rem; border: 1.5px solid var(--success); margin-top: 10px;">
+                <strong>Get a Cell Configuration:</strong><br>
+                Spreadsheet: Company KPI Matrix<br>
+                Cell Coordinate: <strong>B2</strong>
+              </div>
+            `
+          },
+          {
+            title: "Add the Slack Node",
+            desc: "Drag a connection line out from the right side of your Google Sheets module to create a new step. Search for `Slack` and select **Create a Message**. Authorize your Slack workspace.",
+            activeIdx: 2,
+            nodes: [
+              { id: "timer", label: "Scheduler", x: 80, y: 150, active: false, icon: SVG_CLOCK },
+              { id: "sheets", label: "Google Sheets", x: 200, y: 150, active: false, icon: SVG_SHEETS },
+              { id: "slack", label: "Slack<br>(Message)", x: 320, y: 150, active: true, icon: SVG_SLACK }
+            ],
+            lines: [
+              { from: "timer", to: "sheets", active: false },
+              { from: "sheets", to: "slack", active: true }
+            ]
+          },
+          {
+            title: "Format the Layout",
+            desc: `Under **Channel ID**, pick your preferred channel. Click inside the **Text** box and type: \`Weekly Performance Update: \` then look at the variable panel and click the item labeled \`Value\` under the Google Sheets section. Click **OK**.`,
+            activeIdx: 2,
+            nodes: [
+              { id: "timer", label: "Scheduler", x: 80, y: 150, active: false, icon: SVG_CLOCK },
+              { id: "sheets", label: "Google Sheets", x: 200, y: 150, active: false, icon: SVG_SHEETS },
+              { id: "slack", label: "Slack<br>(Formatted)", x: 320, y: 150, active: true, icon: SVG_SLACK }
+            ],
+            lines: [
+              { from: "timer", to: "sheets", active: false },
+              { from: "sheets", to: "slack", active: true }
+            ],
+            panel: true,
+            panelContent: `
+              <div style="background: #1c1f2e; padding: 12px; border-radius: 8px; font-size: 0.75rem; border: 1.5px solid var(--success); margin-top: 10px;">
+                <strong>Slack Message Fields:</strong><br>
+                Channel ID: #metrics-updates<br>
+                Text: ${SVG_TINY_SHEETS} Weekly Performance Update: <span style="background: rgba(168, 85, 247, 0.1); color: #a855f7; padding: 2px 6px; border-radius: 4px; font-weight: bold; align-items: center; display: inline-flex; gap: 2px;">${SVG_TINY_CHECK} Google Sheets -> Value (e.g. 14,820)</span>
+              </div>
+            `
+          },
+          {
+            title: "Turn It On",
+            desc: "Click the blue **Run once** button to execute a manual check. Verify the test message hits your Slack channel successfully, locate the **Scheduling** toggle switch in the bottom toolbar and flip it to **ON**.",
+            activeIdx: 2,
+            nodes: [
+              { id: "timer", label: "Scheduler", x: 80, y: 150, active: true, icon: SVG_CLOCK },
+              { id: "sheets", label: "Google Sheets", x: 200, y: 150, active: true, icon: SVG_SHEETS },
+              { id: "slack", label: "Slack", x: 320, y: 150, active: true, icon: SVG_SLACK }
+            ],
+            lines: [
+              { from: "timer", to: "sheets", active: true },
+              { from: "sheets", to: "slack", active: true }
+            ],
+            panel: true,
+            panelContent: `
+              <div style="text-align: center; color: var(--success); font-weight: bold; font-size: 0.8rem; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                ${SVG_LIGHTNING} REPORT RUN SUCCESSFUL (Digest Dispatched)<br>
+                🟢 SCHEDULER STATUS: ARMED & ACTIVE (Mondays 9AM)
+              </div>
+            `
+          }
+        ],
+        4: [
+          {
+            title: "Initialize Shopify",
+            desc: "Create a new Zap in your Zapier dashboard. Choose **Shopify** for your trigger step. Set the **Event** dropdown to **New Order** and hit **Continue**. Sign in by entering your primary `.myshopify.com` store URL string.",
+            activeNode: "g4-node1",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">App & Event (Shopify Trigger)</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">App</span>
+                <div class="zap-field-value" style="display: flex; align-items: center;">${SVG_SHOPIFY} Shopify</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Event</span>
+                <div class="zap-field-value">New Order</div>
+              </div>
+            `
+          },
+          {
+            title: "Test the Shopify Trigger",
+            desc: "Click **Continue** to move to the test tab, then click **Test Trigger**. Pick an order that includes a customer phone number and click **Continue with selected record**.",
+            activeNode: "g4-node1",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">Shopify Pull Sample</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Parsed Shopify Order 1042</span>
+                <div class="zap-field-value" style="font-family: monospace; font-size: 0.72rem;">
+                  {<br>
+                  &nbsp;&nbsp;Customer Name: "John Doe",<br>
+                  &nbsp;&nbsp;Customer Phone: "2125550199",<br>
+                  &nbsp;&nbsp;Total Price: "$145.00"<br>
+                  }
+                </div>
+              </div>
+            `
+          },
+          {
+            title: "Add a Formatter Interceptor",
+            desc: "Click the **+** sign to add a second step. Search for and select **Formatter by Zapier**. Under the **Event** dropdown, choose **Numbers** and hit **Continue**.",
+            activeNode: "g4-node2",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">App & Event (Formatter)</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">App</span>
+                <div class="zap-field-value" style="display: flex; align-items: center;">${SVG_GEAR} Formatter by Zapier</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Event</span>
+                <div class="zap-field-value">Numbers</div>
+              </div>
+            `
+          },
+          {
+            title: "Sanitize the Phone Number",
+            desc: "Inside the Formatter setup window, open the **Transform** dropdown and select **Format Phone Number**. In the **Input** text box, select the Shopify value named `Customer Phone`. Under **To Format**, pick **E.164 (e.g. +1234567890)**. Click **Continue** and then **Test Step**.",
+            activeNode: "g4-node2",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">Configure Formatting</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Transform</span>
+                <div class="zap-field-value">Format Phone Number</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Input</span>
+                <div class="zap-field-value">
+                  <span class="variable-pill" style="display: inline-flex; align-items: center;">${SVG_SHOPIFY} 1. Customer Phone: 2125550199</span>
+                </div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">To Format</span>
+                <div class="zap-field-value">E.164 (e.g. +12125550199)</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Output (Formatted)</span>
+                <div class="zap-field-value" style="color: var(--success); font-weight: bold;">+12125550199</div>
+              </div>
+            `
+          },
+          {
+            title: "Deploy Twilio",
+            desc: "Click the **+** button to add your final action step. Search for `Twilio` and set the **Event** option to **Send SMS**. Click **Continue** and enter your Twilio Account SID and Auth Token.",
+            activeNode: "g4-node3",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">App & Event (Twilio SMS)</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">App</span>
+                <div class="zap-field-value" style="display: flex; align-items: center;">${SVG_TWILIO} Twilio</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Event</span>
+                <div class="zap-field-value">Send SMS</div>
+              </div>
+            `
+          },
+          {
+            title: "Map the Formatted Target",
+            desc: "In the configuration tab, click the **From Number** dropdown and select your virtual Twilio number. For the **To Number** box, click inside, open the **2. Numbers (Formatter)** step data, and choose the output value pill.",
+            activeNode: "g4-node3",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">Configure Twilio Numbers</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">From Number</span>
+                <div class="zap-field-value">+15017122661 (Twilio Sandbox)</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">To Number</span>
+                <div class="zap-field-value">
+                  <span class="variable-pill" style="display: inline-flex; align-items: center;">${SVG_GEAR} 2. Output: +12125550199</span>
+                </div>
+              </div>
+            `
+          },
+          {
+            title: "Compose the Copy & Publish",
+            desc: "In the **Message Body** text area, type: `Hi ` -> click Step 1 and select `Customer First Name` -> type `, your order of ` -> select `Total Price` -> type ` is confirmed!`. Click **Continue**, run your **Test Step**, and click **Publish**.",
+            activeNode: "g4-node3",
+            overlayActive: true,
+            overlayContent: `
+              <div class="zap-panel-header">
+                <div class="zap-panel-title">Message Body Setup</div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Message Body</span>
+                <div class="zap-field-value" style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px;">
+                  Hi <span class="variable-pill" style="display: inline-flex; align-items: center;">${SVG_SHOPIFY} 1. Customer Name: John Doe</span>, your order of <span class="variable-pill" style="display: inline-flex; align-items: center;">${SVG_SHOPIFY} 1. Total Price: $145.00</span> is confirmed!
+                </div>
+              </div>
+              <div class="zap-field">
+                <span class="zap-field-label">Zap Status</span>
+                <div class="zap-field-value" style="color: var(--success); font-weight: 800; display: flex; align-items: center;">${SVG_ROCKET} ACTIVE / PUBLISHED</div>
+              </div>
+            `
+          }
+        ]
+      };
+
+      // State managers for stepper visualizers
+      const stepperStates = { 1: 0, 2: 0, 3: 0, 4: 0 };
+
+      // Initialize all guide steps UI
+      function initStepper(guideId) {
+        const steps = GUIDES_DATABASE[guideId];
+        const dotsContainer = document.getElementById(`dots-g${guideId}`);
+        dotsContainer.innerHTML = '';
+        
+        steps.forEach((step, idx) => {
+          const dot = document.createElement('div');
+          dot.className = `step-dot ${idx === 0 ? 'active' : ''}`;
+          dot.addEventListener('click', () => {
+            goToStep(guideId, idx);
+          });
+          dotsContainer.appendChild(dot);
+        });
+
+        updateStepDisplay(guideId);
+      }
+
+      function goToStep(guideId, stepIdx) {
+        const steps = GUIDES_DATABASE[guideId];
+        if (stepIdx < 0 || stepIdx >= steps.length) return;
+        
+        stepperStates[guideId] = stepIdx;
+        updateStepDisplay(guideId);
+      }
+
+      function updateStepDisplay(guideId) {
+        const stepIdx = stepperStates[guideId];
+        const stepData = GUIDES_DATABASE[guideId][stepIdx];
+        
+        // Update texts
+        document.getElementById(`title-g${guideId}`).textContent = stepData.title;
+        document.getElementById(`desc-g${guideId}`).innerHTML = stepData.desc
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/`(.*?)`/g, '<code style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">$1</code>');
+        document.getElementById(`indicator-g${guideId}`).textContent = `Step ${stepIdx + 1} of ${GUIDES_DATABASE[guideId].length}`;
+
+        // Update Dots
+        const dots = document.getElementById(`dots-g${guideId}`).children;
+        Array.from(dots).forEach((dot, idx) => {
+          dot.className = 'step-dot';
+          if (idx === stepIdx) dot.classList.add('active');
+          else if (idx < stepIdx) dot.classList.add('completed');
+        });
+
+        // Update Visualizer
+        if (guideId === 1 || guideId === 4) {
+          // Zapier Visualizer
+          const nodes = ["node1", "node2", "node3"];
+          nodes.forEach(node => {
+            const el = document.getElementById(`g${guideId}-${node}`);
+            if (el) {
+              el.classList.remove('active');
+              if (`g${guideId}-${node}` === stepData.activeNode) {
+                el.classList.add('active');
+              }
+            }
+          });
+
+          // Connectors
+          const conns = ["conn1", "conn2"];
+          conns.forEach((conn, index) => {
+            const el = document.getElementById(`g${guideId}-${conn}`);
+            if (el) {
+              el.classList.remove('active');
+              // Activate connectors as user progresses past trigger/first action
+              if (stepIdx > (index * 3) + 1) {
+                el.classList.add('active');
+              }
+            }
+          });
+
+          // Overlay Panel
+          const panel = document.getElementById(`g${guideId}-panel`);
+          if (panel) {
+            if (stepData.overlayActive) {
+              panel.innerHTML = stepData.overlayContent + `<button class="btn-copy" style="margin-top: auto; padding: 6px 12px; font-size: 0.72rem; align-self: flex-end;" onclick="this.parentElement.classList.remove('active')">Close Details ×</button>`;
+              panel.classList.add('active');
+            } else {
+              panel.classList.remove('active');
+            }
+          }
+        } else if (guideId === 2 || guideId === 3) {
+          // Make.com Visualizer
+          const canvas = document.getElementById(`g${guideId}-make-canvas`);
+          canvas.innerHTML = ''; // Clear canvas
+
+          // Render connection lines first
+          stepData.lines.forEach(line => {
+            const fromNode = stepData.nodes.find(n => n.id === line.from);
+            const toNode = stepData.nodes.find(n => n.id === line.to);
+            if (fromNode && toNode) {
+              const x1 = fromNode.x + 40;
+              const y1 = fromNode.y + 40;
+              const x2 = toNode.x + 40;
+              const y2 = toNode.y + 40;
+
+              const distance = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+              const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+
+              const lineEl = document.createElement('div');
+              lineEl.className = `make-connection-line ${line.active ? 'active' : ''}`;
+              lineEl.style.width = `${distance}px`;
+              lineEl.style.left = `${x1}px`;
+              lineEl.style.top = `${y1}px`;
+              lineEl.style.transform = `rotate(${angle}deg)`;
+              canvas.appendChild(lineEl);
+            }
+          });
+
+          // Render Circle nodes
+          stepData.nodes.forEach(node => {
+            const nodeEl = document.createElement('div');
+            nodeEl.className = `make-node ${node.active ? 'active' : ''}`;
+            nodeEl.style.left = `${node.x}px`;
+            nodeEl.style.top = `${node.y}px`;
+            
+            // Add pulse effect if configured
+            if (node.pulse) {
+              nodeEl.style.animation = 'pulse 1.8s infinite';
+            }
+
+            nodeEl.innerHTML = `
+              <span style="font-size: 1.6rem;">${node.icon}</span>
+              <div class="make-node-label">${node.label}</div>
+            `;
+            canvas.appendChild(nodeEl);
+          });
+
+          // Add configuration dialog pane if present
+          if (stepData.panel) {
+            const panelEl = document.createElement('div');
+            panelEl.style.position = 'absolute';
+            panelEl.style.bottom = '10px';
+            panelEl.style.left = '10px';
+            panelEl.style.right = '10px';
+            panelEl.style.zIndex = '12';
+            panelEl.innerHTML = stepData.panelContent;
+            canvas.appendChild(panelEl);
+          }
+        }
+      }
+
+      // Next / Prev button binds
+      document.querySelectorAll('.js-next-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const guideId = parseInt(btn.getAttribute('data-guide'));
+          const currentIdx = stepperStates[guideId];
+          const totalSteps = GUIDES_DATABASE[guideId].length;
+          
+          if (currentIdx < totalSteps - 1) {
+            goToStep(guideId, currentIdx + 1);
+          } else {
+            // Reached end, toggle all prerequisites as ticked automatically as an award
+            document.querySelectorAll(`.js-prereq[data-guide="${guideId}"]`).forEach(item => {
+              item.classList.add('checked');
+            });
+            alert(`Congratulations! You have completed Guide ${guideId}. The project is marked as checked in your prerequisites list.`);
+          }
+        });
+      });
+
+      document.querySelectorAll('.js-prev-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const guideId = parseInt(btn.getAttribute('data-guide'));
+          const currentIdx = stepperStates[guideId];
+          
+          if (currentIdx > 0) {
+            goToStep(guideId, currentIdx - 1);
+          }
+        });
+      });
+
+      // Initial stepper setup
+      initStepper(1);
+      initStepper(2);
+      initStepper(3);
+      initStepper(4);
+
+
+      // 3. Portfolio Builder Tool Logic
+      const inputName = document.getElementById('builder-name');
+      const inputTitle = document.getElementById('builder-title');
+      const checkLead = document.getElementById('proj-lead');
+      const checkPost = document.getElementById('proj-post');
+      const checkDigest = document.getElementById('proj-digest');
+      const checkSms = document.getElementById('proj-sms');
+      const txtOutput = document.getElementById('builder-output');
+      const copyBtn = document.getElementById('builder-copy-btn');
+
+      function generatePortfolioText() {
+        const name = inputName.value.trim() || "Alex Rivera";
+        const title = inputTitle.value.trim() || "Automation Engineer";
+        
+        let markdown = `## Automation Portfolio: ${name}\n`;
+        markdown += `### ${title}\n\n`;
+        markdown += `Here are the core automated workflows configured in my developer workspace:\n\n`;
+
+        if (checkLead.checked) {
+          markdown += `#### Lead Capture & CRM Routing (Zapier)\n`;
+          markdown += `- **Overview**: Linked Google Forms submissions directly to HubSpot CRM contacts with Slack notification triggers.\n`;
+          markdown += `- **Key Technologies**: Zapier Webhooks, Google Forms, HubSpot CRM SDK, Slack Webhooks.\n`;
+          markdown += `- **Impact**: Bypasses manual entry workflows, routing incoming leads to sales channels in under 3 seconds.\n\n`;
+        }
+
+        if (checkPost.checked) {
+          markdown += `#### Multi-Platform Cross-Posting System (Make.com)\n`;
+          markdown += `- **Overview**: Setup an automated social posting queue reading active Google Sheet rows and distributing content to LinkedIn & Twitter APIs.\n`;
+          markdown += `- **Key Technologies**: Make.com Scenario Editor, Google Sheets API, LinkedIn OAuth, Twitter SDK.\n`;
+          markdown += `- **Impact**: Enables 100% free scheduled cross-posting, reducing community management hours by 70%.\n\n`;
+        }
+
+        if (checkDigest.checked) {
+          markdown += `#### Weekly KPI Reporting Digests (Make.com)\n`;
+          markdown += `- **Overview**: Configured a weekly cron trigger capturing cells from financial spreadsheets and formatting metrics summaries on Slack channels.\n`;
+          markdown += `- **Key Technologies**: Make.com Scheduler, Google Sheets Cell Extraction, Slack Message Block Kit.\n`;
+          markdown += `- **Impact**: Democratizes analytics access across the engineering and sales team automatically every Monday at 9:00 AM.\n\n`;
+        }
+
+        if (checkSms.checked) {
+          markdown += `#### Shopify Order Notifications (Zapier)\n`;
+          markdown += `- **Overview**: Connected Shopify webhooks to Twilio SMS APIs, sanitizing customer phone values through a Formatter logic block.\n`;
+          markdown += `- **Key Technologies**: Zapier, Shopify SDK, Twilio SMS API, Regex Formatter Logic.\n`;
+          markdown += `- **Impact**: Automatically fires E.164-sanitized order dispatches to buyers, improving customer shipping retention metrics.\n\n`;
+        }
+
+        markdown += `*Certified built in the AI True Sight Interactive Academy.*`;
+        txtOutput.value = markdown;
+      }
+
+      [inputName, inputTitle, checkLead, checkPost, checkDigest, checkSms].forEach(el => {
+        el.addEventListener('input', generatePortfolioText);
+        el.addEventListener('change', generatePortfolioText);
+      });
+
+      // Initial run
+      generatePortfolioText();
+
+      // Copy to clipboard
+      copyBtn.addEventListener('click', () => {
+        txtOutput.select();
+        txtOutput.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(txtOutput.value)
+          .then(() => {
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = 'Portfolio Copy Copied! ✓';
+            copyBtn.style.background = 'var(--success)';
+            copyBtn.style.color = '#fff';
+            setTimeout(() => {
+              copyBtn.textContent = originalText;
+              copyBtn.style.background = 'rgba(245, 158, 11, 0.08)';
+              copyBtn.style.color = 'var(--warning)';
+            }, 2000);
+          })
+          .catch(err => {
+            console.error('Failed to copy: ', err);
+          });
+      });
+    });
+  </script>
+</body>
+</html>
