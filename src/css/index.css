@@ -2194,3 +2194,167 @@ body.light-theme .player-placeholder-title {
   }
 }
 
+/* --- PREMIUM CONFIRMATION/ALERT MODAL --- */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(6, 7, 10, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
+}
+
+.custom-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.custom-modal-card {
+  background: linear-gradient(135deg, var(--bg-card), rgba(12, 16, 23, 0.95));
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 440px;
+  padding: 32px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transform: scale(0.9);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.custom-modal-overlay.active .custom-modal-card {
+  transform: scale(1);
+}
+
+.custom-modal-icon-container {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+/* Modal Icon Types styling */
+.custom-modal-icon-container.success {
+  background: rgba(63, 185, 80, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(63, 185, 80, 0.2);
+}
+
+.custom-modal-icon-container.warning {
+  background: rgba(210, 153, 34, 0.1);
+  color: var(--warning);
+  border: 1px solid rgba(210, 153, 34, 0.2);
+}
+
+.custom-modal-icon-container.error {
+  background: rgba(248, 81, 73, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(248, 81, 73, 0.2);
+}
+
+.custom-modal-icon-container.info {
+  background: rgba(88, 166, 255, 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(88, 166, 255, 0.2);
+}
+
+/* Pulse animation for the icon */
+.custom-modal-icon-pulse {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0;
+  animation: modal-icon-pulse-anim 2s infinite;
+  pointer-events: none;
+}
+
+@keyframes modal-icon-pulse-anim {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+.custom-modal-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 12px;
+  line-height: 1.25;
+}
+
+.custom-modal-message {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.custom-modal-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.custom-modal-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.custom-modal-btn:hover {
+  transform: translateY(-1px);
+}
+
+.custom-modal-btn:active {
+  transform: translateY(1px);
+}
+
+.custom-modal-btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.custom-modal-btn-primary:hover {
+  background: var(--secondary);
+}
+
+.custom-modal-btn-secondary {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+.custom-modal-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--text-muted);
+}
+
+

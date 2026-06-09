@@ -433,12 +433,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 2. Clear Database
   if (resetBtn) {
-    resetBtn.addEventListener('click', () => {
-      if (confirm("Are you sure you want to purge all local tracking logs? This will clean up your localStorage.")) {
+    resetBtn.addEventListener('click', async () => {
+      const confirmed = await window.showConfirm({
+        title: "Purge Telemetry Storage?",
+        message: "Are you sure you want to purge all local tracking logs? This will clean up your localStorage.",
+        type: "warning",
+        confirmText: "Yes, Purge",
+        cancelText: "Cancel"
+      });
+      if (confirmed) {
         if (window.WebsiteAnalytics) {
           window.WebsiteAnalytics.resetAllData();
           toggleDashboard(false);
-          alert("All metrics flushed successfully!");
+          await window.showAlert({
+            title: "Storage Purged",
+            message: "All metrics flushed successfully!",
+            type: "success"
+          });
         }
       }
     });
@@ -500,29 +511,50 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (gaSaveBtn && gaIdInput) {
-    gaSaveBtn.addEventListener('click', () => {
+    gaSaveBtn.addEventListener('click', async () => {
       const trackingId = gaIdInput.value.trim();
       if (!trackingId) {
-        alert('Please enter a valid Google Analytics Measurement ID.');
+        await window.showAlert({
+          title: "Input Required",
+          message: "Please enter a valid Google Analytics Measurement ID.",
+          type: "warning"
+        });
         return;
       }
 
       if (!trackingId.startsWith('G-')) {
-        alert('Format error: Measurement ID must start with "G-". Example: G-1234567');
+        await window.showAlert({
+          title: "Invalid Format",
+          message: 'Format error: Measurement ID must start with "G-". Example: G-1234567',
+          type: "error"
+        });
         return;
       }
 
       localStorage.setItem('ga_measurement_id', trackingId);
-      alert(`Success! Google Analytics Measurement ID [${trackingId}] saved successfully. Real-time logging is active for visitors on the landing page.`);
+      await window.showAlert({
+        title: "Configuration Saved",
+        message: `Success! Google Analytics Measurement ID [${trackingId}] saved successfully. Real-time logging is active for visitors on the landing page.`,
+        type: "success"
+      });
       updateGAConfigUI();
     });
   }
 
   if (gaClearBtn) {
-    gaClearBtn.addEventListener('click', () => {
-      if (confirm('Are you sure you want to disconnect Google Analytics tracking?')) {
+    gaClearBtn.addEventListener('click', async () => {
+      const confirmed = await window.showConfirm({
+        title: "Disconnect Google Analytics?",
+        message: "Are you sure you want to disconnect Google Analytics tracking?",
+        type: "warning"
+      });
+      if (confirmed) {
         localStorage.removeItem('ga_measurement_id');
-        alert('Google Analytics disconnected successfully.');
+        await window.showAlert({
+          title: "Disconnected",
+          message: "Google Analytics disconnected successfully.",
+          type: "success"
+        });
         updateGAConfigUI();
       }
     });
@@ -538,12 +570,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Validate that it is a PNG image
     if (file.type !== 'image/png') {
-      alert('Format error: Only PNG format logo images are supported for transparency blending.');
+      window.showAlert({
+        title: "Invalid File Type",
+        message: 'Format error: Only PNG format logo images are supported for transparency blending.',
+        type: "error"
+      });
       return;
     }
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       const dataUrl = event.target.result;
       
       // Save in localStorage
@@ -559,7 +595,11 @@ document.addEventListener('DOMContentLoaded', () => {
         window.WebsiteAnalytics.logEvent('interaction', 'Dashboard Settings', 'Uploaded custom brand logo image');
       }
 
-      alert('Success! Custom PNG logo uploaded, applied, and persisted successfully across the entire website.');
+      await window.showAlert({
+        title: "Logo Applied",
+        message: 'Success! Custom PNG logo uploaded, applied, and persisted successfully across the entire website.',
+        type: "success"
+      });
     };
     reader.readAsDataURL(file);
   }
@@ -600,8 +640,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Logo Reset to Default Action Trigger
   if (logoResetBtn) {
-    logoResetBtn.addEventListener('click', () => {
-      if (confirm('Are you sure you want to clear your custom logo and revert to the default AI True Sight branding?')) {
+    logoResetBtn.addEventListener('click', async () => {
+      const confirmed = await window.showConfirm({
+        title: "Reset Branding Logo?",
+        message: 'Are you sure you want to clear your custom logo and revert to the default AI True Sight branding?',
+        type: "warning"
+      });
+      if (confirmed) {
         localStorage.removeItem('aitruesight_custom_logo');
         
         if (window.applyCustomLogo) {
@@ -612,7 +657,11 @@ document.addEventListener('DOMContentLoaded', () => {
           window.WebsiteAnalytics.logEvent('interaction', 'Dashboard Settings', 'Reverted custom brand logo to default');
         }
 
-        alert('Branding reverted to default AI True Sight logo.');
+        await window.showAlert({
+          title: "Branding Reset",
+          message: 'Branding reverted to default AI True Sight logo.',
+          type: "success"
+        });
       }
     });
   }

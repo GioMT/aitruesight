@@ -331,3 +331,156 @@ class AnalyticsEngine {
 
 // Bind to window global space
 window.WebsiteAnalytics = new AnalyticsEngine();
+
+// --- PREMIUM DYNAMIC MODAL COMPONENT ENGINE ---
+(function() {
+  // Modal creation helper
+  function createModal(options, isConfirm = false) {
+    return new Promise((resolve) => {
+      const type = options.type || 'info'; // 'success', 'warning', 'error', 'info'
+      const title = options.title || (isConfirm ? 'Confirm Action' : 'Notification');
+      const message = options.message || '';
+      const confirmText = options.confirmText || 'OK';
+      const cancelText = options.cancelText || 'Cancel';
+
+      // Icon SVGs
+      let iconSvg = '';
+      if (type === 'success') {
+        iconSvg = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 32px; height: 32px;"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="3" fill="none"/></svg>`;
+      } else if (type === 'warning') {
+        iconSvg = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 32px; height: 32px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="2.5" fill="none"/><line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2.5"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="3"/></svg>`;
+      } else if (type === 'error') {
+        iconSvg = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 32px; height: 32px;"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="3"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="3"/></svg>`;
+      } else { // info / default
+        iconSvg = `<svg class="svg-icon" viewBox="0 0 24 24" style="width: 32px; height: 32px;"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" fill="none"/><line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="2.5"/><line x1="12" y1="8" x2="12.01" y2="8" stroke="currentColor" stroke-width="3"/></svg>`;
+      }
+
+      // Create modal elements
+      const overlay = document.createElement('div');
+      overlay.className = 'custom-modal-overlay';
+      
+      let buttonsHtml = '';
+      if (isConfirm) {
+        buttonsHtml = `
+          <button class="custom-modal-btn custom-modal-btn-secondary js-modal-cancel" tabindex="0">${cancelText}</button>
+          <button class="custom-modal-btn custom-modal-btn-primary js-modal-confirm" tabindex="0">${confirmText}</button>
+        `;
+      } else {
+        buttonsHtml = `
+          <button class="custom-modal-btn custom-modal-btn-primary js-modal-confirm" tabindex="0" style="width: 100%;">${confirmText}</button>
+        `;
+      }
+
+      overlay.innerHTML = `
+        <div class="custom-modal-card" role="dialog" aria-modal="true" tabindex="-1">
+          <div class="custom-modal-icon-container ${type}">
+            <div class="custom-modal-icon-pulse"></div>
+            ${iconSvg}
+          </div>
+          <h2 class="custom-modal-title">${title}</h2>
+          <div class="custom-modal-message">${message}</div>
+          <div class="custom-modal-actions">
+            ${buttonsHtml}
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      // Animation entrance trigger
+      // Force reflow
+      overlay.offsetHeight;
+      overlay.classList.add('active');
+
+      const card = overlay.querySelector('.custom-modal-card');
+      card.focus();
+
+      // Clean up modal helper
+      function closeModal(value) {
+        overlay.classList.remove('active');
+        window.removeEventListener('keydown', handleKeyDown);
+        // Wait for transition to finish before removing from DOM
+        setTimeout(() => {
+          overlay.remove();
+          // Restore focus to previously active element if possible
+          if (prevActiveElement && typeof prevActiveElement.focus === 'function') {
+            prevActiveElement.focus();
+          }
+          resolve(value);
+        }, 300);
+      }
+
+      // Track focus management
+      const prevActiveElement = document.activeElement;
+
+      // Event listeners
+      const confirmBtn = overlay.querySelector('.js-modal-confirm');
+      const cancelBtn = overlay.querySelector('.js-modal-cancel');
+
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', () => closeModal(true));
+      }
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => closeModal(false));
+      }
+
+      // Backdrop click option (closes/resolves false for confirms, true for alerts)
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          closeModal(false);
+        }
+      });
+
+      // Escape & Enter key triggers
+      function handleKeyDown(e) {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          closeModal(false);
+        } else if (e.key === 'Enter' && !isConfirm) {
+          // Alert can be dismissed with enter anywhere
+          e.preventDefault();
+          closeModal(true);
+        }
+      }
+      window.addEventListener('keydown', handleKeyDown);
+
+      // Focus trapping inside modal card
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          const focusables = card.querySelectorAll('button, [tabindex="0"]');
+          if (focusables.length === 0) return;
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+
+          if (e.shiftKey) { // Shift + Tab
+            if (document.activeElement === first) {
+              last.focus();
+              e.preventDefault();
+            }
+          } else { // Tab
+            if (document.activeElement === last) {
+              first.focus();
+              e.preventDefault();
+            }
+          }
+        }
+      });
+    });
+  }
+
+  // Global methods definitions
+  window.showAlert = function(options) {
+    if (typeof options === 'string') {
+      options = { message: options };
+    }
+    return createModal(options, false);
+  };
+
+  window.showConfirm = function(options) {
+    if (typeof options === 'string') {
+      options = { message: options };
+    }
+    return createModal(options, true);
+  };
+})();
+
